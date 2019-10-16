@@ -35,7 +35,7 @@ var airportMarkers = L.geoJSON(null, {
             radius: radius
         })
     }
-}).addTo(map)
+})
 var latlngs;
 
 layerControl.addOverlay(airportMarkers,
