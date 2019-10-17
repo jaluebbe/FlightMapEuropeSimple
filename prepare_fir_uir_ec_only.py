@@ -3,6 +3,7 @@ from shapely.geometry import shape
 import numpy as np
 
 import remove_third_dimension
+import clip_geojson_precision
 
 bounds = []
 
@@ -38,9 +39,6 @@ for firuir in data['features']:
         firuir['properties']['AV_NAME'] = 'KYIV FIR'
     elif firuir['properties']['AV_AIRSPAC'] == 'EKDKFIR':
         firuir['properties']['AV_NAME'] = 'KOEBENHAVN FIR'
-    elif firuir['properties']['OBJECTID'] == 24763:
-        firuir['properties']['MAX_FLIGHT'] = 660  # MINSK FIR
-        firuir['properties']['UL_VISIBLE'] = 'both'
     elif firuir['properties']['OBJECTID'] == 24929:
         firuir['properties']['MIN_FLIGHT'] = 0
         firuir['properties']['MAX_FLIGHT'] = 660  # TBILISI FIR
@@ -82,6 +80,8 @@ for feature in data['features']:
     feature['geometry'] = remove_third_dimension.remove_third_dimension(
         shape(feature['geometry']))
 
-file_name = 'flightmap_europe_fir_uir_ec_only.json'
+file_name = 'static/flightmap_europe_fir_uir_ec_only.json'
 with open(file_name, 'w') as f:
     geojson.dump(data, f)
+
+clip_geojson_precision.clip(file_name)
