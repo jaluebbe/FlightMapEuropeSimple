@@ -27,7 +27,7 @@ The shapefile containing the airports for the static version of the map is
 created using prepare_static_airports.py . 
 Data from ourairports.com is filtered and converted to GeoJSON.
 
-# Static version of the map
+## Static version of the map
 The version of the map hosted at 
 https://jaluebbe.github.io/FlightMapEuropeSimple/ 
 consists of HTML, CSS and JavaScript only. 
