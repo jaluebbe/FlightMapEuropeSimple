@@ -3,7 +3,7 @@ var map = L.map('map', {
     zoomDelta: 0.5
 });
 map.attributionControl.addAttribution(
-    '<a href="https://github.com/jaluebbe/FlightMapEuropeSimple">Source on GitHub</a>');
+    '<a href="https://github.com/jaluebbe/FlightMapEuropeSimple" target="_blank">Source on GitHub</a>');
 // add link to a privacy statement
 //map.attributionControl.addAttribution(
 //    '<a href="./static/datenschutz.html" target="_blank">Datenschutzerkl&auml;rung</a>'
