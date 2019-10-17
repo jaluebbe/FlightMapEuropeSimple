@@ -2,7 +2,7 @@ var aircraftPositions;
 var downloadingPositions = false;
 
 var planeIcon = L.icon({
-    iconUrl: 'aiga_air_transportation.svg',
+    iconUrl: 'static/aiga_air_transportation.svg',
     iconSize: [16, 16]
 })
 

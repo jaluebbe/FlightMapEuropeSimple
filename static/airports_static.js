@@ -43,7 +43,7 @@ layerControl.addOverlay(airportMarkers,
 
 function loadAirportData() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', './airports_static.json');
+    xhr.open('GET', './static/airports_static.json');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
         if (xhr.status === 200) {

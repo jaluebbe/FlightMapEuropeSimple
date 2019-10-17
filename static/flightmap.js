@@ -6,7 +6,7 @@ map.attributionControl.addAttribution(
     '<a href="https://github.com/jaluebbe/FlightMapEuropeSimple">Source on GitHub</a>');
 // add link to a privacy statement
 //map.attributionControl.addAttribution(
-//    '<a href="datenschutz.html" target="_blank">Datenschutzerkl&auml;rung</a>'
+//    '<a href="./static/datenschutz.html" target="_blank">Datenschutzerkl&auml;rung</a>'
 //);
 map.setView([52, 4.5], 6);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {

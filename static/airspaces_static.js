@@ -104,7 +104,7 @@ function refreshAirspaces() {
 
 function loadFirUirShapes() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', './flightmap_europe_fir_uir.json');
+    xhr.open('GET', './static/flightmap_europe_fir_uir.json');
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
         if (xhr.status === 200) {
