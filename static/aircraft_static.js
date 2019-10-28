@@ -56,7 +56,8 @@ map.on('overlayremove', function(eo) {
         (eo.name.indexOf('Upper Airspace') != -1)) {
         return
     }
-    reloadAircraftPositions();
+    if (!map.hasLayer(upperAirspace) && !map.hasLayer(lowerAirspace))
+        reloadAircraftPositions();
 });
 
 function refreshAircraftPositions() {
@@ -105,10 +106,7 @@ function refreshAircraftPositions() {
                 }
                 aircraftPositions.push(aircraftPosition);
             });
-            aircraftMarkers.clearLayers();
-            aircraftMarkers.addData(aircraftPositions);
-            clusteredAircraftMarkers.clearLayers();
-            clusteredAircraftMarkers.addLayer(aircraftMarkers);
+            reloadAircraftPositions()
         }
         downloadingPositions = false;
     };
