@@ -45,13 +45,18 @@ var clusteredAircraftMarkers = L.markerClusterGroup({
 map.addLayer(clusteredAircraftMarkers);
 layerControl.addOverlay(clusteredAircraftMarkers, "<span>Aircraft</span>");
 
-map.on('baselayerchange', function(eo) {
-    if ((eo.name.indexOf('Lower Airspace') == -1) &&
+function reloadAircraftPositions() {
+    aircraftMarkers.clearLayers();
+    aircraftMarkers.addData(aircraftPositions);
+    clusteredAircraftMarkers.clearLayers();
+    clusteredAircraftMarkers.addLayer(aircraftMarkers);
+}
+map.on('overlayremove', function(eo) {
+    if ((eo.name.indexOf('Lower Airspace') != -1) &&
         (eo.name.indexOf('Upper Airspace') != -1)) {
         return
     }
-    aircraftMarkers.clearLayers();
-    aircraftMarkers.addData(aircraftPositions);
+    reloadAircraftPositions();
 });
 
 function refreshAircraftPositions() {
