@@ -75,6 +75,9 @@ layerControl.addOverlay(upperAirspace, upperAirspaceLabel);
 layerControl.addOverlay(singleAirspace, singleAirspaceLabel);
 layerControl.addTo(map);
 
+function reloadAircraftPositions() {
+    return;
+}
 // For regions where upper airspaces (UIR) as well as lower airspaces (FIR)
 // exist, shapes are treated as baselayers to allow a choice by radio buttons.
 // To make upperAirspace and lowerAirspace mutually exclusive the setTimeout
@@ -82,11 +85,13 @@ layerControl.addTo(map);
 map.on('overlayadd', function(eo) {
     if (eo.name === lowerAirspaceLabel) {
         setTimeout(function() {
-            map.removeLayer(upperAirspace)
+            map.removeLayer(upperAirspace);
+            reloadAircraftPositions();
         }, 10);
     } else if (eo.name === upperAirspaceLabel) {
         setTimeout(function() {
-            map.removeLayer(lowerAirspace)
+            map.removeLayer(lowerAirspace);
+            reloadAircraftPositions();
         }, 10);
     }
 });

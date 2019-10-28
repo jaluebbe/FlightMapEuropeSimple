@@ -19,6 +19,16 @@ var aircraftMarkers = L.geoJSON(null, {
             offset: [0, -5]
         });
     },
+    filter: function(feature) {
+        switch (feature.properties.ul_visible) {
+            case 'both':
+                return true;
+            case 'lower':
+                return (map.hasLayer(lowerAirspace) || !map.hasLayer(upperAirspace));
+            case 'upper':
+                return (map.hasLayer(upperAirspace) || !map.hasLayer(lowerAirspace));
+        }
+    },
     pointToLayer: function(feature, latlng) {
         return L.marker(latlng, {
             icon: planeIcon,
@@ -35,11 +45,18 @@ var clusteredAircraftMarkers = L.markerClusterGroup({
 map.addLayer(clusteredAircraftMarkers);
 layerControl.addOverlay(clusteredAircraftMarkers, "<span>Aircraft</span>");
 
-map.on('baselayerchange', function(eo) {
-    if ((eo.name.indexOf('Lower Airspace') == -1) &&
+function reloadAircraftPositions() {
+    aircraftMarkers.clearLayers();
+    aircraftMarkers.addData(aircraftPositions);
+    clusteredAircraftMarkers.clearLayers();
+    clusteredAircraftMarkers.addLayer(aircraftMarkers);
+}
+map.on('overlayremove', function(eo) {
+    if ((eo.name.indexOf('Lower Airspace') != -1) &&
         (eo.name.indexOf('Upper Airspace') != -1)) {
         return
     }
+    reloadAircraftPositions();
 });
 
 function refreshAircraftPositions() {
@@ -58,6 +75,8 @@ function refreshAircraftPositions() {
                 var callsign = aircraft[1].trim();
                 if (callsign.length == 0)
                     return;
+                else if (aircraft[5] === null || aircraft[6] === null)
+                    return;
                 var aircraftPosition = ({
                     "geometry": {
                         "type": "Point",
@@ -73,6 +92,17 @@ function refreshAircraftPositions() {
                         "vertical_speed": Math.round(aircraft[11] * (60 / 0.3048))
                     }
                 });
+                for (var i = 0, len = upper_lower_airspace_limits.features.length; i < len; i++) {
+                    let airspace = upper_lower_airspace_limits.features[i];
+                    if (aircraftPosition.properties.flight_level < airspace.properties.MIN_FLIGHT)
+                        continue;
+                    else if (aircraftPosition.properties.flight_level > airspace.properties.MAX_FLIGHT)
+                        continue;
+                    else if (turf.booleanPointInPolygon(aircraftPosition, airspace)) {
+                        aircraftPosition.properties.ul_visible = airspace.properties.UL_VISIBLE;
+                        break;
+                    }
+                }
                 aircraftPositions.push(aircraftPosition);
             });
             aircraftMarkers.clearLayers();
