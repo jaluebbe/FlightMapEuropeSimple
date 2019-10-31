@@ -86,15 +86,13 @@ function refreshAircraftPositions() {
                     "ground_speed": Math.round(aircraft[9] * (3600 / 1852)),
                     "vertical_speed": Math.round(aircraft[11] * (60 / 0.3048))
                 });
-                for (var i = 0, len = upper_lower_airspace_limits.features.length; i < len; i++) {
-                    let airspace = upper_lower_airspace_limits.features[i];
+                turf.featureEach(upper_lower_airspace_limits, function (airspace, featureIndex) {
                     if (aircraftPosition.properties.flight_level >= airspace.properties.MIN_FLIGHT &&
                         aircraftPosition.properties.flight_level <= airspace.properties.MAX_FLIGHT &&
                         turf.booleanPointInPolygon(aircraftPosition, airspace)) {
                             aircraftPosition.properties.ul_visible = airspace.properties.UL_VISIBLE;
-                            break;
                     }
-                }
+                });
                 aircraftPositions.push(aircraftPosition);
             });
             reloadAircraftPositions()
