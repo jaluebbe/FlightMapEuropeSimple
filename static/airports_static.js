@@ -12,7 +12,7 @@ var airportMarkers = L.geoJSON(null, {
             iata = '-';
         }
         var tooltipContent =
-            "" + feature.properties.name + "<BR>" +
+            "" + feature.properties.name + "<br>" +
             feature.properties.icao + " / " +
             feature.properties.iata;
         layer.bindTooltip(tooltipContent, {
