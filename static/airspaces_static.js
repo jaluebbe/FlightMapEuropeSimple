@@ -120,4 +120,3 @@ function loadFirUirShapes() {
     };
     xhr.send();
 }
-loadFirUirShapes();

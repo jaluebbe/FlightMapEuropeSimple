@@ -59,4 +59,3 @@ function loadAirportData() {
     };
     xhr.send();
 }
-loadAirportData();

@@ -111,5 +111,3 @@ function refreshAircraftPositions() {
     };
     xhr.send();
 }
-refreshAircraftPositions();
-var myInterval = window.setInterval("refreshAircraftPositions()", 10000);

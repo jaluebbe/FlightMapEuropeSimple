@@ -25,5 +25,12 @@
     <script type="text/javascript" src="static/upper_lower_airspace_limits.js"></script>
     <script type="text/javascript" src="static/aircraft_static.js"></script>
 </body>
+<script type="text/javascript">
+    loadAirportData();
+    loadFirUirShapes();
+    refreshAircraftPositions();
+    var myInterval = window.setInterval("refreshAircraftPositions()",
+    10000);
+</script>
 
 </html>
