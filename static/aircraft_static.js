@@ -5,9 +5,17 @@ var planeIcon = L.icon({
     iconUrl: 'static/aiga_air_transportation.svg',
     iconSize: [16, 16]
 })
-
+function processedActiveFeature(feature) {
+    return false;
+}
+function clickAircraft(eo) {
+    return;
+}
 var aircraftMarkers = L.geoJSON(null, {
     onEachFeature: function(feature, layer) {
+        layer.once('click', function(eo) {
+            clickAircraft(eo);
+        });
         var tooltipContent =
             "" + feature.properties.callsign + "<br>" +
             "FL " + feature.properties.flight_level + "<br>" +
@@ -20,6 +28,8 @@ var aircraftMarkers = L.geoJSON(null, {
         });
     },
     filter: function(feature) {
+        if (processedActiveFeature(feature))
+            return false;
         switch (feature.properties.ul_visible) {
             case 'both':
                 return true;

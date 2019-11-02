@@ -4,9 +4,15 @@ map.getPane('routePlot').style.zIndex = 395;
 map.createPane('airports');
 map.getPane('airports').style.zIndex = 396;
 
+function clickAirport(eo) {
+    return;
+}
 var airportMarkers = L.geoJSON(null, {
     pane: 'airports',
     onEachFeature: function(feature, layer) {
+        layer.on('click', function(eo) {
+            clickAirport(eo);
+        });
         var iata = feature.properties.iata;
         if (typeof iata === 'undefined' || iata == '') {
             iata = '-';
