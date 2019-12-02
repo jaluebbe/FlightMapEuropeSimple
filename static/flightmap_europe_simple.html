@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <title>flightmap europe simple</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha384-eS4bw6aEvhCSXWGP85ANR/N8isWKzT7P36NvcuTJGkrj6wsbxLVpXslrNXYHyseD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" integrity="sha384-lPzjPsFQL6te2x+VxmV6q1DpRxpRk0tmnl2cpwAO5y04ESyc752tnEWPKDfl1olr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" integrity="sha384-5kMSQJ6S4Qj5i09mtMNrWpSi8iXw230pKU76xTmrpezGnNJQzj0NzXjQLLg+jE7k" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/flightmap.css">
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha384-bmPowDlt+owc6Mn3LwOzLPkYiVm6MuKeLMe0qN2pp7Fhmux2xtVJm5e+ekpCVv4x" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js" integrity="sha384-N9K+COcUk7tr9O2uHZVp6jl7ueGhWsT+LUKUhd/VpA0svQrQMGArhY8r/u/Pkwih" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
+    <script src="static/leaflet.rotatedMarker.js"></script>
+    <script type="text/javascript" src="static/flightmap.js"></script>
+    <script type="text/javascript" src="static/airports.js"></script>
+    <!--<script type="text/javascript"
+    src="static/airports_static.js"></script>-->
+    <script type="text/javascript" src="static/airspaces_static.js"></script>
+    <script type="text/javascript" src="static/upper_lower_airspace_limits.js"></script>
+    <script type="text/javascript" src="static/aircraft_static.js"></script>
+    <script type="text/javascript" src="static/aircraft_interactive.js"></script>
+</body>
+<script type="text/javascript">
+    refreshAirportData();
+    window.setInterval("refreshAirportData()", 60000);
+    loadFirUirShapes();
+    refreshAircraftPositions();
+    window.setInterval("refreshAircraftPositions()", 10000);
+</script>
+
+</html>

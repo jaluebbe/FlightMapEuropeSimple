@@ -35,3 +35,39 @@ Airspaces and airports consist of static data.
 Aircraft positions are downloaded directly from OpenSky Network every 10s. 
 Interactive controls providing flight route information for airports or
 aircraft are not available on this map. 
+
+## Dynamic version of the map
+Airports as well as flight routes are taken from the VRS database which is published daily. 
+Clicking on an aircraft shows the current flight route while clicking on an airport shows all known destinations at once.
+
+### Software requirements
+
+#### conda/apt
+
+gunicorn
+
+#### pip
+
+fastapi uvicorn aiofiles
+
+### Data Sources
+
+#### Flight route database of the Virtual Radar Server project
+
+A crowd-sourced flight route database is available at http://www.virtualradarserver.co.uk/FlightRoutes.aspx . 
+
+Call prepare_vrs_database.py to download the VRS database and to create a table FlightRoute.
+
+### Startup of the web interface
+
+The web interface and API is hosted using FastAPI. It could also be run as a Docker container.
+
+#### FastAPI
+```
+gunicorn -w8 -b 0.0.0.0:5000 backend_fastapi:app -k uvicorn.workers.UvicornWorker
+```
+#### Build and run as a Docker container
+```
+docker build -t flightroute_europe_simple ./
+docker run -d -p 80:80 --mount src=`pwd`/flightroutes,target=/app/flightroutes,type=bind flightmap_europe_simple
+```
