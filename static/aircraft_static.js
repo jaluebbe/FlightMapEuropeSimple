@@ -80,6 +80,7 @@ function refreshAircraftPositions() {
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
         if (xhr.status === 200) {
+            var t_start = Date.now();
             aircraftPositions = [];
             var response = JSON.parse(xhr.responseText);
             response.states.forEach(function(aircraft) {
@@ -87,6 +88,8 @@ function refreshAircraftPositions() {
                 if (callsign.length == 0)
                     return;
                 else if (aircraft[5] === null || aircraft[6] === null)
+                    return;
+                else if (!callsign.match('^[A-Z]{3}[0-9]{1,4}[A-Z]{0,2}'))
                     return;
                 var aircraftPosition = turf.point([aircraft[5], aircraft[6]], {
                     "callsign": callsign,
@@ -106,6 +109,8 @@ function refreshAircraftPositions() {
                 aircraftPositions.push(aircraftPosition);
             });
             reloadAircraftPositions()
+            var t_stop = Date.now();
+            console.log('duration: ' + (t_stop-t_start) / 1e3 + 's');
         }
         downloadingPositions = false;
     };
