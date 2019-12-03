@@ -110,7 +110,7 @@ function refreshAircraftPositions() {
             });
             reloadAircraftPositions()
             var t_stop = Date.now();
-            console.log('duration: ' + (t_stop-t_start) / 1e3 + 's');
+//            console.log('duration: ' + (t_stop-t_start) / 1e3 + 's');
         }
         downloadingPositions = false;
     };
