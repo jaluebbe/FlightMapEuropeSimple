@@ -74,6 +74,34 @@ info.reset = function() {
 
 info.addTo(map);
 
+var callsignSearch = L.control({
+    position: 'topright'
+});
+callsignSearch.onAdd = function(map) {
+    this._div = L.DomUtil.create('div', 'info legend');
+    this._div.innerHTML =
+        '<h4>Callsign search</h4>' +
+        '<input type="text" id="callsignInput" pattern="^[A-Z]{3}[0-9]{1,4}[A-Z]{0,2}$" minlength="4" maxlength="8" size=10>' +
+        '&nbsp;<button id="searchButton" disabled>search</button>';
+    L.DomEvent.disableClickPropagation(this._div);
+    return this._div;
+};
+callsignSearch.addTo(map)
+const callsignInput = document.getElementById('callsignInput');
+const searchButton = document.getElementById('searchButton');
+callsignInput.addEventListener('keyup', function(event) {
+    isValidCallsign = callsignInput.checkValidity();
+    if (isValidCallsign) {
+        searchButton.disabled = false;
+    } else {
+        searchButton.disabled = true;
+    }
+});
+searchButton.addEventListener('click', function(event) {
+    routeInfo(callsignInput.value, true);
+
+});
+
 function clickAircraft(eo) {
     // add the previously active feature to the aircraft markers.
     if (typeof activeFeature != 'undefined') {
@@ -106,7 +134,7 @@ function clickAirport(eo) {
     routesInfo(eo.target.feature.properties);
 }
 
-function routeInfo(callsign) {
+function routeInfo(callsign, fitBounds = false) {
     if (downloadingRoute == true) {
         return
     };
@@ -123,14 +151,16 @@ function routeInfo(callsign) {
                 info.update(callsign, route_info.features[0].properties);
                 routePlot.clearLayers();
                 turf.segmentEach(route_info, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
-                var start = currentSegment.geometry.coordinates[0];
-                var end = currentSegment.geometry.coordinates[1];
-                routePlot.addData(turf.greatCircle(start, end));
+                    var start = currentSegment.geometry.coordinates[0];
+                    var end = currentSegment.geometry.coordinates[1];
+                    routePlot.addData(turf.greatCircle(start, end));
                 });
+                if (fitBounds)
+                    map.fitBounds(routePlot.getBounds());
             }
-          } else if (xhr.status === 422) {
-              info.invalid(callsign);
-          }
+        } else if (xhr.status === 422) {
+            info.invalid(callsign);
+        }
         downloadingRoute = false;
     };
     xhr.send();
