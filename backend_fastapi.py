@@ -13,7 +13,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", include_in_schema=False)
 async def root():
-#    return FileResponse('static/flightmap_europe_static.html')
     return FileResponse('static/flightmap_europe_simple.html')
 
 @app.get("/api/geojson/airports")
@@ -26,7 +25,6 @@ def get_geojson_callsign(
     '^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)([A-Z]{2}))$'))):
     return backend_vrs_db.get_geojson_callsign(callsign)
 
-#http://localhost:8000/items/?q=foo&q=bar
 @app.get("/api/geojson/airport/")
 def get_geojson_airport(
     icao: str = Query(..., min_length=4, max_length=4, regex="^[0-9A-Z]{4}$")):
