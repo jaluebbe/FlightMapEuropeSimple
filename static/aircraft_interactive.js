@@ -140,7 +140,7 @@ function routeInfo(callsign, fitBounds = false) {
     };
     downloadingRoute = true;
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', './api/geojson/callsign?callsign=' + callsign);
+    xhr.open('GET', './api/geojson/callsign/?callsign=' + callsign);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function() {
         if (xhr.status === 200) {
