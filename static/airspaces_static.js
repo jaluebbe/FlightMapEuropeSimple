@@ -20,7 +20,7 @@ var upperAirspace = L.geoJSON([], {
     onEachFeature: onEachFeatureFir,
     pane: 'firs',
     filter: function(feature) {
-        return (['upper'].includes(feature.properties.UL_VISIBLE))
+        return ('upper'.includes(feature.properties.UL_VISIBLE))
     },
     style: function(feature) {
         if (feature.properties.UL_VISIBLE == 'upper') {
@@ -38,7 +38,7 @@ var lowerAirspace = L.geoJSON([], {
     onEachFeature: onEachFeatureFir,
     pane: 'firs',
     filter: function(feature) {
-        return (['lower'].includes(feature.properties.UL_VISIBLE))
+        return ('lower'.includes(feature.properties.UL_VISIBLE))
     },
     style: function(feature) {
         return {
@@ -54,7 +54,7 @@ var singleAirspace = L.geoJSON([], {
     onEachFeature: onEachFeatureFir,
     pane: 'firs',
     filter: function(feature) {
-        return (['both'].includes(feature.properties.UL_VISIBLE))
+        return ('both'.includes(feature.properties.UL_VISIBLE))
     },
     style: function(feature) {
         return {
