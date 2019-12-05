@@ -134,7 +134,8 @@ function clickAirport(eo) {
     routesInfo(eo.target.feature.properties);
 }
 
-function routeInfo(callsign, fitBounds = false) {
+function routeInfo(callsign, fitBounds) {
+    fitBounds = fitBounds || false;
     if (downloadingRoute == true) {
         return
     };
