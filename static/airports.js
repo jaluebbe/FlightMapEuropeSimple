@@ -69,7 +69,10 @@ info.reset = function() {
 };
 info.addTo(map);
 info.updateAirportInfo = function(airportInfo) {
-    var text = '<b>' + airportInfo.name + ' (' + airportInfo.iata + ')</b><br>';
+    var text = '<b>' + airportInfo.name + ' (' + airportInfo.icao;
+    if (airportInfo.iata !== undefined && airportInfo.iata != '')
+        text +=  ' / ' + airportInfo.iata;
+    text += ')</b><br>';
     if (typeof airportInfo.known_destinations !== 'undefined') {
         text += airportInfo.known_destinations + ' known destinations<br>';
     }

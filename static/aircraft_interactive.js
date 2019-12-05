@@ -49,7 +49,10 @@ info.update = function(callsign, props) {
         }
     }
     for (index = 0; index < props.airports.length; index++) {
-        text += props.airports[index].name + ' (' + props.airports[index].icao + ')<br>';
+        text += props.airports[index].name + ' (' + props.airports[index].icao;
+        if (props.airports[index].iata !== undefined && props.airports[index].iata != '')
+            text +=  ' / ' + props.airports[index].iata;
+        text +=  ')<br>';
         if (index < props.airports.length - 1) {
             text += ' &ndash; ';
         }
