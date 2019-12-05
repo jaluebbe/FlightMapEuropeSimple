@@ -2,7 +2,7 @@ map.createPane('routePlot');
 map.getPane('routePlot').style.zIndex = 395;
 
 map.createPane('airports');
-map.getPane('airports').style.zIndex = 396;
+map.getPane('airports').style.zIndex = 397;
 
 function clickAirport(eo) {
     return;
