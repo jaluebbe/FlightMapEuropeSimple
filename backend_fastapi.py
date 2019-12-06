@@ -25,8 +25,13 @@ def get_geojson_callsign(
     '^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)([A-Z]{2}))$'))):
     return backend_vrs_db.get_geojson_callsign(callsign)
 
+@app.get("/api/geojson/airline/")
+def get_geojson_airline(
+    icao: str = Query(..., min_length=3, max_length=3, regex=(
+    '^[A-Z]{3}$'))):
+    return backend_vrs_db.get_geojson_airline(icao)
+
 @app.get("/api/geojson/airport/")
 def get_geojson_airport(
     icao: str = Query(..., min_length=4, max_length=4, regex="^[0-9A-Z]{4}$")):
     return backend_vrs_db.get_geojson_airport(icao)
-

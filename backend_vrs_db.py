@@ -60,6 +60,26 @@ def get_airport_position(airport_icao):
         return None
     return result
 
+def get_airport_positions():
+    try:
+        connection = sqlite3.connect("file:" + directory +
+            "StandingData.sqb?mode=ro", uri=True)
+        connection.row_factory = namedtuple_factory
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT Icao, ROUND(Latitude, 6) AS Latitude, "
+            "ROUND(Longitude, 6) AS Longitude FROM Airport "
+            "WHERE LENGTH(Icao) = 4")
+        result = cursor.fetchall()
+        connection.close()
+    except sqlite3.DatabaseError:
+        logger.exception('get_airport_positions()')
+        return None
+    airport_positions = {}
+    for row in result:
+        airport_positions[row.Icao] = [row.Longitude, row.Latitude]
+    return airport_positions
+
 def get_distinct_routes_by_airport(airport_icao):
     try:
         connection = sqlite3.connect("file:" + directory +
@@ -79,6 +99,28 @@ def get_distinct_routes_by_airport(airport_icao):
         return None
     if result is not None:
         return [row.DirectRoute for row in result]
+
+def get_distinct_routes_by_airline(operator_icao):
+    try:
+        connection = sqlite3.connect("file:" + directory +
+            "StandingData.sqb?mode=ro", uri=True)
+        connection.row_factory = namedtuple_factory
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT DISTINCT Route, OperatorName, OperatorIata "
+            "FROM FlightRoute WHERE OperatorIcao=?", (operator_icao,))
+        result = cursor.fetchall()
+        connection.close()
+    except sqlite3.DatabaseError:
+        logger.exception(
+            'get_distinct_routes_by_airline({})'.format(operator_icao))
+        return None
+    if result is not None:
+        return {
+            'routes': [row.Route for row in result],
+            'operator_icao': operator_icao,
+            'operator_iata': result[0].OperatorIata,
+            'operator_name': result[0].OperatorName}
 
 def get_route_by_callsign(callsign):
     try:
@@ -157,6 +199,39 @@ def get_geojson_airport(icao):
             _coordinates.append(_line_coordinates)
     _feature_collection['features'] = [{"type": "Feature",
         "properties": {},
+        "geometry": {"type": "MultiLineString",
+        "coordinates": _coordinates}}]
+    return _feature_collection
+
+def get_geojson_airline(icao):
+    _feature_collection = {
+        "type": "FeatureCollection", "features": [{"type": "Feature",
+        "properties": {}, "geometry": {"type": "MultiLineString",
+        "coordinates": []}}]}
+    _airline_info = get_distinct_routes_by_airline(icao)
+    if _airline_info is None:
+        return json.dumps(_feature_collection)
+    _routes_info = _airline_info['routes']
+    if len(_routes_info) == 0:
+        return json.dumps(_feature_collection)
+    _airport_positions = get_airport_positions()
+    _features = []
+    _coordinates = []
+    for _route in _routes_info:
+        _line_coordinates = []
+        _route_items = _route.split('-')
+        for _icao in _route_items:
+            _position = _airport_positions.get(_icao)
+            if _position is None:
+                _line_coordinates = []
+                break
+            _line_coordinates.append(_position)
+        if len(_line_coordinates) > 0:
+            _coordinates.append(_line_coordinates)
+    _feature_collection['features'] = [{"type": "Feature",
+        "properties": {"operator_icao": _airline_info['operator_icao'],
+        "operator_iata": _airline_info['operator_iata'],
+        "operator_name": _airline_info['operator_name']},
         "geometry": {"type": "MultiLineString",
         "coordinates": _coordinates}}]
     return _feature_collection

@@ -51,8 +51,8 @@ info.update = function(callsign, props) {
     for (index = 0; index < props.airports.length; index++) {
         text += props.airports[index].name + ' (' + props.airports[index].icao;
         if (props.airports[index].iata !== undefined && props.airports[index].iata != '')
-            text +=  ' / ' + props.airports[index].iata;
-        text +=  ')<br>';
+            text += ' / ' + props.airports[index].iata;
+        text += ')<br>';
         if (index < props.airports.length - 1) {
             text += ' &ndash; ';
         }
@@ -84,7 +84,7 @@ callsignSearch.onAdd = function(map) {
     this._div = L.DomUtil.create('div', 'info legend');
     this._div.innerHTML =
         '<h4>Callsign search</h4>' +
-        '<input type="text" id="callsignInput" pattern="^[A-Z]{3}[0-9]{1,4}[A-Z]{0,2}$" minlength="4" maxlength="8" size=10>' +
+        '<input type="text" id="callsignInput" pattern="^[A-Z]{3}(?:[0-9]{1,4}[A-Z]{0,2}){0,1}$" minlength="3" maxlength="8" size=10>' +
         '&nbsp;<button id="searchButton" disabled>search</button>';
     L.DomEvent.disableClickPropagation(this._div);
     return this._div;
@@ -101,8 +101,10 @@ callsignInput.addEventListener('keyup', function(event) {
     }
 });
 searchButton.addEventListener('click', function(event) {
-    routeInfo(callsignInput.value, true);
-
+    if (callsignInput.value.length == 3)
+        airlineRoutesInfo(callsignInput.value, true);
+    else
+        routeInfo(callsignInput.value, true);
 });
 
 function clickAircraft(eo) {
@@ -121,7 +123,6 @@ function clickAircraft(eo) {
     activeAircraftMarker.addData(activeFeature);
     routeInfo(activeFeature.properties.callsign);
 }
-
 
 function clickAirport(eo) {
     // add the previously active feature to the aircraft markers.
@@ -166,6 +167,43 @@ function routeInfo(callsign, fitBounds) {
             info.invalid(callsign);
         }
         downloadingRoute = false;
+    };
+    xhr.send();
+}
+
+info.updateAirlineInfo = function(airlineInfo) {
+    var text = '<b>' + airlineInfo.operator_name + ' (' + airlineInfo.operator_icao;
+    if (airlineInfo.operator_iata !== undefined && airlineInfo.operator_iata != '')
+        text += ' / ' + airlineInfo.operator_iata;
+    text += ')</b><br>';
+    text += '<button onclick="info.reset()">reset airline routes</button>';
+    this._div.innerHTML = text;
+}
+
+function airlineRoutesInfo(operatorIcao) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', './api/geojson/airline/?icao=' + operatorIcao);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var airlineInfo = JSON.parse(xhr.responseText);
+            if (typeof airlineInfo.features === 'undefined') {} else {
+                turf.propEach(airlineInfo, function(currentProperties, featureIndex) {
+                    info.updateAirlineInfo(currentProperties);
+                });
+                routePlot.clearLayers();
+                turf.segmentEach(airlineInfo, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
+                    var start = currentSegment.geometry.coordinates[0];
+                    var end = currentSegment.geometry.coordinates[1];
+                    var distance = turf.distance(start, end);
+                    if (distance > 0)
+                        routePlot.addData(turf.greatCircle(start, end, {
+                            npoints: Math.round(distance * 0.009),
+                            offset: 10
+                        }));
+                });
+            }
+        }
     };
     xhr.send();
 }
