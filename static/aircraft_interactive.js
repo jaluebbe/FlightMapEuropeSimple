@@ -189,11 +189,13 @@ function airlineRoutesInfo(operatorIcao) {
     xhr.onload = function() {
         if (xhr.status === 200) {
             var airlineInfo = JSON.parse(xhr.responseText);
-            if (typeof airlineInfo.features === 'undefined') {} else {
+            routePlot.clearLayers();
+            if (typeof airlineInfo.features === 'undefined') {
+                info.unknown(operatorIcao);
+            } else {
                 turf.propEach(airlineInfo, function(currentProperties, featureIndex) {
                     info.updateAirlineInfo(currentProperties);
                 });
-                routePlot.clearLayers();
                 turf.segmentEach(airlineInfo, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
                     var start = currentSegment.geometry.coordinates[0];
                     var end = currentSegment.geometry.coordinates[1];

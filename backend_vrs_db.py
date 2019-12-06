@@ -115,7 +115,7 @@ def get_distinct_routes_by_airline(operator_icao):
         logger.exception(
             'get_distinct_routes_by_airline({})'.format(operator_icao))
         return None
-    if result is not None:
+    if result is not None and len(result) > 0:
         return {
             'routes': [row.Route for row in result],
             'operator_icao': operator_icao,
