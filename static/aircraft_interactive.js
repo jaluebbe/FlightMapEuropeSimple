@@ -84,7 +84,9 @@ callsignSearch.onAdd = function(map) {
     this._div = L.DomUtil.create('div', 'info legend');
     this._div.innerHTML =
         '<h4>Callsign search</h4>' +
-        '<input type="text" id="callsignInput" pattern="^[A-Z]{3}(?:[0-9]{1,4}[A-Z]{0,2}){0,1}$" minlength="3" maxlength="8" size=10>' +
+        '<input type="text" style="text-transform: uppercase;" id="callsignInput" ' +
+        'pattern="^[a-zA-Z]{3}(?:[0-9]{1,4}[a-zA-Z]{0,2}){0,1}$" ' +
+        'minlength="3" maxlength="8" size=10>' +
         '&nbsp;<button id="searchButton" disabled>search</button>';
     L.DomEvent.disableClickPropagation(this._div);
     return this._div;
@@ -102,9 +104,9 @@ callsignInput.addEventListener('keyup', function(event) {
 });
 searchButton.addEventListener('click', function(event) {
     if (callsignInput.value.length == 3)
-        airlineRoutesInfo(callsignInput.value, true);
+        airlineRoutesInfo(callsignInput.value.toUpperCase());
     else
-        routeInfo(callsignInput.value, true);
+        routeInfo(callsignInput.value.toUpperCase(), true);
 });
 
 function clickAircraft(eo) {
