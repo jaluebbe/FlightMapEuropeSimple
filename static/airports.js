@@ -23,8 +23,8 @@ var airportMarkers = L.geoJSON(null, {
             feature.properties.icao + " / " +
             feature.properties.iata;
         if (typeof feature.properties.known_destinations !== 'undefined') {
-            tooltipContent += "<br>" + feature.properties.known_destinations + " known destinations"
-                + "<br>" + feature.properties.known_departures + " known departures";
+            tooltipContent += "<br>" + feature.properties.known_destinations + " known destinations" +
+                "<br>" + feature.properties.known_departures + " known departures";
         }
         layer.bindTooltip(tooltipContent, {
             direction: "top",
@@ -45,7 +45,7 @@ var airportMarkers = L.geoJSON(null, {
 var latlngs;
 var routePlot = L.geoJSON(null, {
     pane: 'routePlot',
-    style: function (feature) {
+    style: function(feature) {
         return {
             weight: 1.5,
             opacity: 1,
@@ -55,9 +55,11 @@ var routePlot = L.geoJSON(null, {
 });
 routePlot.addTo(map);
 
-var info = L.control({position: 'bottomright'});
+var info = L.control({
+    position: 'bottomright'
+});
 
-info.onAdd = function (map) {
+info.onAdd = function(map) {
     this._div = L.DomUtil.create('div', 'info');
     this.reset();
     return this._div;
@@ -71,12 +73,12 @@ info.addTo(map);
 info.updateAirportInfo = function(airportInfo) {
     var text = '<b>' + airportInfo.name + ' (' + airportInfo.icao;
     if (airportInfo.iata !== undefined && airportInfo.iata != '')
-        text +=  ' / ' + airportInfo.iata;
+        text += ' / ' + airportInfo.iata;
     text += ')</b><br>';
     if (typeof airportInfo.known_destinations !== 'undefined') {
         text += airportInfo.known_destinations + ' known destinations<br>';
     }
-    text +=  '<button onclick="info.reset()">reset airport routes</button>';
+    text += '<button onclick="info.reset()">reset airport routes</button>';
     this._div.innerHTML = text;
 }
 layerControl.addOverlay(airportMarkers,
@@ -95,11 +97,12 @@ function routesInfo(airportInfo) {
                 turf.segmentEach(routes_info, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
                     var start = currentSegment.geometry.coordinates[0];
                     var end = currentSegment.geometry.coordinates[1];
-                    Math.round(turf.distance(start, end) * 0.009);
-                    routePlot.addData(turf.greatCircle(start, end, {
-                        npoints: Math.round(turf.distance(start, end) * 0.009),
-                        offset: 10
-                    }));
+                    var distance = turf.distance(start, end);
+                    if (distance > 0)
+                        routePlot.addData(turf.greatCircle(start, end, {
+                            npoints: Math.round(distance * 0.009),
+                            offset: 10
+                        }));
                 });
             }
         }
@@ -114,6 +117,7 @@ map.on('click', function(eo) {
 function clickMap(eo) {
     info.reset();
 }
+
 function refreshAirportData() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', './api/geojson/airports');
