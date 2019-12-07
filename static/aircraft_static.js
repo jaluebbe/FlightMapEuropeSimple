@@ -1,3 +1,5 @@
+map.attributionControl.addAttribution(
+    '&copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>');
 var aircraftPositions;
 var downloadingPositions = false;
 
