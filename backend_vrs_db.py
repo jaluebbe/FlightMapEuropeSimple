@@ -87,10 +87,8 @@ def get_distinct_routes_by_airport(airport_icao):
         connection.row_factory = namedtuple_factory
         cursor = connection.cursor()
         cursor.execute(
-            "SELECT DISTINCT SUBSTR(Route, myIndex, 9) AS DirectRoute FROM "
-            "(SELECT Route, INSTR(Route, ? || '-') AS myIndex FROM "
-            "(SELECT Callsign, Route FROM FlightRoute) WHERE myIndex > 0)",
-            (airport_icao,))
+           "SELECT DISTINCT Origin || '-' || Destination AS DirectRoute "
+           "FROM FlightLegs WHERE Origin = ?", (airport_icao,))
         result = cursor.fetchall()
         connection.close()
     except sqlite3.DatabaseError:
@@ -107,8 +105,10 @@ def get_distinct_routes_by_airline(operator_icao):
         connection.row_factory = namedtuple_factory
         cursor = connection.cursor()
         cursor.execute(
-            "SELECT DISTINCT Route, OperatorName, OperatorIata "
-            "FROM FlightRoute WHERE OperatorIcao=?", (operator_icao,))
+            "SELECT DISTINCT Origin || '-' || Destination AS DirectRoute, "
+            "o.Name AS OperatorName, o.Iata AS OperatorIata "
+            "FROM FlightLegs, Operator o "
+            "WHERE OperatorIcao = ? AND o.Icao=OperatorIcao", (operator_icao,))
         result = cursor.fetchall()
         connection.close()
     except sqlite3.DatabaseError:
@@ -117,7 +117,7 @@ def get_distinct_routes_by_airline(operator_icao):
         return None
     if result is not None and len(result) > 0:
         return {
-            'routes': [row.Route for row in result],
+            'routes': [row.DirectRoute for row in result],
             'operator_icao': operator_icao,
             'operator_iata': result[0].OperatorIata,
             'operator_name': result[0].OperatorName}
