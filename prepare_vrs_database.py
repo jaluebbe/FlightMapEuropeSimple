@@ -3,6 +3,18 @@ import requests
 import os
 import sqlite3
 import gzip
+import numpy as np
+import math
+
+def get_distance(lat1, lon1, lat2, lon2):
+    if None in (lat1, lon1, lat2, lon2):
+        return float('nan')
+    degRad = 2 * math.pi / 360
+    distance = (
+        6.370e6 * math.acos(math.sin(lat1 * degRad) * math.sin(lat2 * degRad)
+        + math.cos(lat1 * degRad) * math.cos(lat2 * degRad) * math.cos((lon2 - lon1)
+        * degRad)))
+    return int(round(distance))
 
 vrs_url = "http://www.virtualradarserver.co.uk/Files/StandingData.sqb.gz"
 directory = "flightroutes/"
@@ -30,17 +42,150 @@ def download_vrs_database():
         file_info['vrs'] = time.time()
 
 def create_flightroute_table():
+    """
+    SQL statements were formatted using
+    https://www.freeformatter.com/sql-formatter.html
+    """
     connection = sqlite3.connect(os.path.join(directory, "StandingData.sqb"))
+    connection.create_function('distance', 4, get_distance)
     cursor = connection.cursor()
     cursor.execute("DROP TABLE IF EXISTS FlightRoute")
     cursor.execute("""
         CREATE TABLE FlightRoute AS
-        SELECT Callsign, OperatorIcao, OperatorIata, OperatorName,
-        FromAirportIcao || '-' || IFNULL(GROUP_CONCAT(RouteStopView.AirportIcao,
-        '-')||'-','') || ToAirportIcao AS Route FROM RouteView
-        LEFT JOIN RouteStopView ON RouteView.RouteId=RouteStopView.RouteId
-        WHERE LENGTH(FromAirportIcao) > 0 AND LENGTH(ToAirportIcao) > 0
-        GROUP BY Callsign;
+        SELECT
+            Callsign,
+            OperatorIcao,
+            OperatorIata,
+            OperatorName,
+            FromAirportIcao || '-' || IFNULL(GROUP_CONCAT(
+                RouteStopView.AirportIcao, '-') || '-', '') || ToAirportIcao
+                    AS Route
+        FROM
+            RouteView
+            LEFT JOIN
+                RouteStopView 
+                ON RouteView.RouteId = RouteStopView.RouteId
+        WHERE
+            LENGTH(FromAirportIcao) > 0
+            AND LENGTH(ToAirportIcao) > 0
+        GROUP BY
+            Callsign
+        """)
+    cursor.execute("DROP TABLE IF EXISTS FlightLegs")
+    cursor.execute("""
+        CREATE TABLE FlightLegs AS
+        SELECT
+            Origin,
+            Destination,
+            OperatorIcao,
+            DISTANCE(o.Latitude, o. Longitude, d.Latitude, d.Longitude)
+                AS Length
+        FROM
+            (
+                SELECT DISTINCT
+                    SUBSTR(Route, 1, 4) AS Origin,
+                    SUBSTR(Route, 6, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 6, 4) AS Origin,
+                    SUBSTR(Route, 11, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 11, 4) AS Origin,
+                    SUBSTR(Route, 16, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 16, 4) AS Origin,
+                    SUBSTR(Route, 21, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 21, 4) AS Origin,
+                    SUBSTR(Route, 26, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 26, 4) AS Origin,
+                    SUBSTR(Route, 31, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 31, 4) AS Origin,
+                    SUBSTR(Route, 36, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 36, 4) AS Origin,
+                    SUBSTR(Route, 41, 4) AS Destination,
+                    OperatorIcao 
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 41, 4) AS Origin,
+                    SUBSTR(Route, 46, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 46, 4) AS Origin,
+                    SUBSTR(Route, 51, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+                UNION
+                SELECT DISTINCT
+                    SUBSTR(Route, 51, 4) AS Origin,
+                    SUBSTR(Route, 56, 4) AS Destination,
+                    OperatorIcao
+                FROM
+                    FlightRoute
+                WHERE
+                    LENGTH(Destination) > 0
+            )
+        ,
+            Airport AS o,
+            Airport AS d
+        WHERE
+            Origin = o.Icao 
+            AND Destination = d.Icao
+            AND Origin != Destination
         """)
     connection.commit()
     connection.close()
