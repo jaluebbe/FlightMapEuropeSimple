@@ -8,7 +8,7 @@ import math
 
 def get_distance(lat1, lon1, lat2, lon2):
     if None in (lat1, lon1, lat2, lon2):
-        return float('nan')
+        return
     degRad = 2 * math.pi / 360
     distance = (
         6.370e6 * math.acos(math.sin(lat1 * degRad) * math.sin(lat2 * degRad)
@@ -187,6 +187,13 @@ def create_flightroute_table():
             AND Destination = d.Icao
             AND Origin != Destination
         """)
+    cursor.execute("ALTER TABLE Airport ADD COLUMN Destinations INTEGER "
+        "DEFAULT 0")
+    cursor.execute("ALTER TABLE Airport ADD COLUMN Origins INTEGER DEFAULT 0")
+    cursor.execute("UPDATE Airport SET Destinations = (SELECT COUNT("
+        "Destination) FROM FlightLegs WHERE Origin=Airport.Icao)")
+    cursor.execute("UPDATE Airport SET Origins = (SELECT COUNT(Origin) FROM "
+        "FlightLegs WHERE Destination=Airport.Icao)")
     connection.commit()
     connection.close()
 
