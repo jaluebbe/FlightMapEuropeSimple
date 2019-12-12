@@ -185,7 +185,6 @@ function flightSearch(e) {
             }
         }
     };
-    console.log(data)
     xhr.send(JSON.stringify(data));
 }
 

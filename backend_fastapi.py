@@ -55,4 +55,4 @@ def get_geojson_airport(
 
 @app.post("/api/geojson/flightsearch")
 def post_geojson_flightsearch(data: FlightSearch):
-    return {'data': data}
+    return backend_vrs_db.get_geojson_flightsearch(data)

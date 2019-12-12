@@ -1,11 +1,43 @@
 import time
 import json
 import sqlite3
+import math
 from collections import namedtuple
 import logging
 logger = logging.getLogger(__name__)
 
 directory = "flightroutes/"
+
+# The following lists of airline alliances including affiliate members are
+# based on several public non-authoritative sources and may be incorrect,
+# incomplete or outdated.
+skyteam_cargo_icaos = [
+    'CYL', 'CSH', 'CXA', 'HVN', 'ROT', 'SVA', 'MEA', 'KAL', 'KLM', 'KQA', 'GIA',
+    'DAL', 'EDV', 'CPZ', 'GJS', 'RPA', 'SKW', 'CSA', 'CES', 'CAL', 'AZA', 'AFR',
+    'HOP', 'AEA', 'AMX', 'SLI', 'ARG', 'AUT', 'AFL', 'KLC']
+star_alliance_icaos = [
+    'SWR', 'NIS', 'GLG', 'THY', 'CLH', 'LRC', 'LLR', 'EVS', 'ASH', 'ROU', 'TAI',
+    'SKV', 'GUG', 'OAL', 'GGN', 'EVA', 'BEL', 'UCA', 'CMP', 'CTN', 'JZA', 'AMU',
+    'ANA', 'AWI', 'SAS', 'THA', 'AIC', 'UAL', 'LNK', 'AAR', 'AKX', 'SAA', 'AJX',
+    'RLK', 'ANZ', 'EXY', 'CCA', 'AEE', 'AUA', 'AVA', 'TPU', 'EST', 'SKW', 'TAP',
+    'CSZ', 'ASQ', 'MSR', 'LOF', 'ACA', 'ETH', 'RPA', 'DLH', 'SIA', 'LOT', 'GJS',
+    'ISV', 'NZM']
+oneworld_icaos = [
+    'ENY', 'QTR', 'ASH', 'TAM', 'QFA', 'ARE', 'CPZ', 'JIA', 'CFE', 'JAL', 'FCM',
+    'BAW', 'MAS', 'JLJ', 'AAL', 'QJE', 'ANE', 'GLP', 'JTA', 'FJI', 'IBE', 'FIN',
+    'DSM', 'SUS', 'IBS', 'SHT', 'SBI', 'ALK', 'LNE', 'RJA', 'QLK', 'SKW', 'LTM',
+    'PDT', 'RPA', 'CAW', 'NWK', 'LAN', 'LPE', 'CPA', 'HDA']
+
+def get_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    degRad = 2 * math.pi / 360
+    distance = (
+        6.370e6 * math.acos(math.sin(lat1 * degRad) * math.sin(lat2 * degRad)
+        + math.cos(lat1 * degRad) * math.cos(lat2 * degRad)
+        * math.cos((lon2 - lon1) * degRad)))
+    return distance
+
+def cos_deg(angle: float) -> float:
+    return math.cos(angle * math.pi / 180)
 
 def namedtuple_factory(cursor, row):
     """
@@ -233,5 +265,179 @@ def get_geojson_airline(icao):
         "operator_iata": _airline_info['operator_iata'],
         "operator_name": _airline_info['operator_name']},
         "geometry": {"type": "MultiLineString",
+        "coordinates": _coordinates}}]
+    return _feature_collection
+
+def flightsearch(request_data):
+    stops = request_data.numberOfStops
+    lat_origin = request_data.origin.lat
+    lon_origin = request_data.origin.lng
+    radius_origin = float(request_data.originRadius)
+    lat_destination = request_data.destination.lat
+    lon_destination = request_data.destination.lng
+    radius_destination = float(request_data.destinationRadius)
+    filter_airline_alliance = request_data.filterAirlineAlliance
+    if filter_airline_alliance == 'Star Alliance':
+        operator_icaos = ','.join(map(repr, star_alliance_icaos))
+    elif filter_airline_alliance == 'Oneworld':
+        operator_icaos = ','.join(map(repr, oneworld_icaos))
+    elif filter_airline_alliance == 'SkyTeam':
+        operator_icaos = ','.join(map(repr, skyteam_icaos))
+    if filter_airline_alliance == '':
+        filter_string_1 = ""
+        filter_string_2 = ""
+        filter_string_3 = ""
+    else:
+        filter_string_1 = f"AND FL1.OperatorIcao IN ({operator_icaos}) "
+        filter_string_2 = f"AND FL2.OperatorIcao IN ({operator_icaos}) "
+        filter_string_3 = f"AND FL3.OperatorIcao IN ({operator_icaos}) "
+    distance = get_distance(lat_origin, lon_origin, lat_destination,
+        lon_destination)
+    max_distance = 16*math.sqrt(1e3)*math.sqrt(distance) + 1.05*distance
+    logger.info(f'distance: {distance/1e3}km')
+    connection = sqlite3.connect("file:" + directory +
+        "StandingData.sqb?mode=ro", uri=True)
+    connection.row_factory = namedtuple_factory
+    connection.create_function('cosd', 1, cos_deg)
+    connection.create_function('distance', 4, get_distance)
+    cursor = connection.cursor()
+    sql_query_origin = f"""
+        SELECT Icao FROM Airport
+        WHERE Destinations > 0
+        AND {lat_origin} - {radius_origin}/110500 < Latitude
+        AND Latitude < {lat_origin} + {radius_origin}/110500
+        AND COSD({lat_origin}) * 110500 * ({lon_origin} - Longitude)
+        < {radius_origin} 
+        AND COSD({lat_origin}) * 110500 * (- {lon_origin} + Longitude)
+        < {radius_origin} 
+        AND DISTANCE(Latitude, Longitude, {lat_origin}, {lon_origin})
+        < {radius_origin};
+        """
+    cursor.execute(sql_query_origin)
+    origin_icaos = [x.Icao for x in cursor.fetchall()]
+    origins = ','.join(map(repr, origin_icaos))
+    logger.debug(f'origins: {origins}')
+    sql_query_destination = f"""
+        SELECT Icao FROM Airport
+        WHERE Origins > 0
+        AND {lat_destination} - {radius_destination}/110500 < Latitude
+        AND Latitude < {lat_destination} + {radius_destination}/110500
+        AND COSD({lat_destination}) * 110500
+        * ({lon_destination} - Longitude) < {radius_destination}
+        AND COSD({lat_destination}) * 110500
+        * (- {lon_destination} + Longitude) < {radius_destination}
+        AND DISTANCE(Latitude, Longitude, {lat_destination}, {lon_destination})
+        < {radius_destination}
+        """
+    cursor.execute(sql_query_destination)
+    destination_icaos = [x.Icao for x in cursor.fetchall()]
+    destinations = ','.join(map(repr, destination_icaos))
+    logger.debug(f'destinations: {destinations}')
+    if stops == 0:
+        sql_query = f"""
+            SELECT DISTINCT 
+            FL1.Origin || '-' || FL1.Destination AS Route,         
+            FL1.Length AS TotalLength, 0 AS Stops  
+            FROM FlightLegs FL1 
+            WHERE FL1.Origin IN ({origins}) 
+            AND FL1.Destination IN ({destinations}) 
+            {filter_string_1}
+            AND TotalLength < {max_distance};
+            """
+    elif stops == 1:
+        sql_query = f"""
+            SELECT DISTINCT 
+            FL1.Origin || '-' || FL1.Destination AS Route,     
+            FL1.Length AS TotalLength, 0 AS Stops  
+            FROM FlightLegs FL1 
+            WHERE FL1.Origin IN ({origins}) 
+            AND FL1.Destination IN ({destinations}) 
+            {filter_string_1}
+            AND TotalLength < {max_distance} 
+            UNION
+            SELECT DISTINCT 
+            FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination AS  
+            Route, (FL1.Length+FL2.Length) AS TotalLength, 1 AS Stops  
+            FROM FlightLegs FL1, FlightLegs FL2 
+            WHERE FL1.Origin IN ({origins}) 
+            AND FL2.Destination IN ({destinations}) 
+            AND FL1.Destination=FL2.Origin 
+            {filter_string_1} 
+            {filter_string_2} 
+            AND TotalLength < {max_distance} 
+            """
+    elif stops == 2:
+        sql_query = f"""
+            SELECT DISTINCT
+            FL1.Origin || '-' || FL1.Destination AS Route,    
+            FL1.Length AS TotalLength, 0 AS Stops  
+            FROM FlightLegs FL1 
+            WHERE FL1.Origin IN ({origins}) 
+            AND FL1.Destination IN ({destinations}) 
+            {filter_string_1} 
+            AND TotalLength < {max_distance} 
+            UNION
+            SELECT DISTINCT 
+            FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination AS  
+            Route, (FL1.Length+FL2.Length) AS TotalLength, 1 AS Stops  
+            FROM FlightLegs FL1, FlightLegs FL2 
+            WHERE FL1.Origin IN ({origins}) 
+            AND FL2.Destination IN ({destinations}) 
+            AND FL1.Destination=FL2.Origin 
+            {filter_string_1} 
+            {filter_string_2} 
+            AND TotalLength < {max_distance} 
+            UNION
+            SELECT DISTINCT 
+            FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination ||
+            '-' || FL3.Destination AS Route, 
+            FL1.Length+FL2.Length+FL3.Length AS TotalLength, 2 AS Stops  
+            FROM FlightLegs FL1, FlightLegs FL2, FlightLegs FL3 
+            WHERE FL1.Origin IN ({origins}) 
+            AND FL3.Destination IN ({destinations}) 
+            AND FL2.Destination != FL1.Origin 
+            AND FL3.Destination != FL2.Origin 
+            AND FL1.Destination=FL2.Origin AND FL2.Destination=FL3.Origin
+            {filter_string_1} 
+            {filter_string_2} 
+            {filter_string_3} 
+            AND TotalLength < {max_distance} 
+            """
+    else:
+        sql_query = ''
+    if not origins or not destinations or not sql_query:
+        cursor.close()
+        connection.close()
+        return []
+    logger.debug(f'flight search query: {sql_query}')
+    cursor.execute(sql_query)
+    sql_results = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    routes = [f"{x.Route}" for x in sql_results]
+    logger.debug('routes: {routes}')
+    return routes
+
+def get_geojson_flightsearch(request_data):
+    _feature_collection = {
+        "type": "FeatureCollection", "features": [{"type": "Feature",
+        "properties": {}, "geometry": {"type": "MultiLineString",
+        "coordinates": []}}]}
+    _routes_info = flightsearch(request_data)
+    _features = []
+    _coordinates = []
+    for _route in _routes_info:
+        _line_coordinates = []
+        _route_items = _route.split('-')
+        for _icao in _route_items:
+            _info = get_airport_position(_icao)
+            if _info is None:
+                _line_coordinates = []
+                break
+            _line_coordinates.append([_info.Longitude, _info.Latitude])
+        if len(_line_coordinates) > 0:
+            _coordinates.append(_line_coordinates)
+    _feature_collection['features'] = [{"type": "Feature",
+        "properties": {}, "geometry": {"type": "MultiLineString",
         "coordinates": _coordinates}}]
     return _feature_collection
