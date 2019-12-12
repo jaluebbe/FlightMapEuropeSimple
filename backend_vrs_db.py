@@ -6,12 +6,26 @@ from collections import namedtuple
 import logging
 logger = logging.getLogger(__name__)
 
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            logger.info('%r  %2.2f ms' % \
+                  (method.__name__, (te - ts) * 1000))
+        return result
+    return timed
+
 directory = "flightroutes/"
 
 # The following lists of airline alliances including affiliate members are
 # based on several public non-authoritative sources and may be incorrect,
 # incomplete or outdated.
-skyteam_cargo_icaos = [
+skyteam_icaos = [
     'CYL', 'CSH', 'CXA', 'HVN', 'ROT', 'SVA', 'MEA', 'KAL', 'KLM', 'KQA', 'GIA',
     'DAL', 'EDV', 'CPZ', 'GJS', 'RPA', 'SKW', 'CSA', 'CES', 'CAL', 'AZA', 'AFR',
     'HOP', 'AEA', 'AMX', 'SLI', 'ARG', 'AUT', 'AFL', 'KLC']
@@ -268,6 +282,7 @@ def get_geojson_airline(icao):
         "coordinates": _coordinates}}]
     return _feature_collection
 
+@timeit
 def flightsearch(request_data):
     stops = request_data.numberOfStops
     lat_origin = request_data.origin.lat
@@ -418,6 +433,7 @@ def flightsearch(request_data):
     logger.debug('routes: {routes}')
     return routes
 
+@timeit
 def get_geojson_flightsearch(request_data):
     _feature_collection = {
         "type": "FeatureCollection", "features": [{"type": "Feature",
