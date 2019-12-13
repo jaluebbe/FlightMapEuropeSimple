@@ -6,13 +6,15 @@ map.attributionControl.addAttribution(
     '<a href="https://github.com/jaluebbe/FlightMapEuropeSimple" target="_blank">Source on GitHub</a>');
 // add link to an imprint and a privacy statement if the file is available.
 function addPrivacyStatement() {
-    var http = new XMLHttpRequest();
-    http.open('HEAD', "./static/datenschutz.html");
-    http.send();
-    if (http.status != 404)
-        map.attributionControl.addAttribution(
-            '<a href="./static/datenschutz.html" target="_blank">Impressum & Datenschutzerkl&auml;rung</a>'
-        );
+    var xhr = new XMLHttpRequest();
+    xhr.open('HEAD', "./static/datenschutz.html");
+    xhr.onload = function() {
+        if (xhr.status === 200)
+            map.attributionControl.addAttribution(
+                '<a href="./static/datenschutz.html" target="_blank">Impressum & Datenschutzerkl&auml;rung</a>'
+            );
+    }
+    xhr.send();
 }
 addPrivacyStatement();
 map.setView([52, 4.5], 6);
