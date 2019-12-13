@@ -7,7 +7,7 @@ map.attributionControl.addAttribution(
 // add link to an imprint and a privacy statement if the file is available.
 function addPrivacyStatement() {
     var http = new XMLHttpRequest();
-    http.open('HEAD', "./static/datenschutz.html", false);
+    http.open('HEAD', "./static/datenschutz.html");
     http.send();
     if (http.status != 404)
         map.attributionControl.addAttribution(
