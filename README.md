@@ -44,7 +44,7 @@ Clicking on an aircraft shows the current flight route while clicking on an airp
 
 #### conda/apt
 
-gunicorn
+gunicorn or hypercorn (alternative to gunicorn+uvicorn which may run on windows)
 
 #### pip
 
@@ -66,6 +66,11 @@ The web interface and API is hosted using FastAPI. It could also be run as a Doc
 ```
 gunicorn -w8 -b 0.0.0.0:5000 backend_fastapi:app -k uvicorn.workers.UvicornWorker
 ```
+or
+```
+hypercorn -w8 -b 0.0.0.0:5000 backend_fastapi:app
+```
+The number of workers is defined via the -w argument. Instead of using multiple workers the --reload argument would restart the worker as soon as any source code is changed.
 #### Build and run as a Docker container
 ```
 docker build -t flightroute_europe_simple ./
