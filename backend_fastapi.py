@@ -3,6 +3,8 @@ from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from pydantic import BaseModel, confloat, conint, constr
 import backend_vrs_db
+import logging
+logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     openapi_prefix='',
