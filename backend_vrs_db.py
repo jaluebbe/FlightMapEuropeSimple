@@ -15,7 +15,7 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            logger.info('%r  %2.2f ms' % \
+            logger.warning('%r  %2.2f ms' % \
                   (method.__name__, (te - ts) * 1000))
         return result
     return timed
@@ -112,10 +112,13 @@ def get_airport_positions():
             "StandingData.sqb?mode=ro", uri=True)
         connection.row_factory = namedtuple_factory
         cursor = connection.cursor()
-        cursor.execute(
-            "SELECT Icao, ROUND(Latitude, 6) AS Latitude, "
-            "ROUND(Longitude, 6) AS Longitude FROM Airport "
-            "WHERE LENGTH(Icao) = 4")
+        cursor.execute("""
+            SELECT Icao, ROUND(Latitude, 6) AS Latitude,
+            ROUND(Longitude, 6) AS Longitude FROM Airport
+            WHERE LENGTH(Icao) = 4
+            OR Destinations > 0
+            OR Origins > 0
+            """)
         result = cursor.fetchall()
         connection.close()
     except sqlite3.DatabaseError:
@@ -302,10 +305,12 @@ def flightsearch(request_data):
         filter_string_1 = ""
         filter_string_2 = ""
         filter_string_3 = ""
+        filter_string_stopovers = ""
     else:
-        filter_string_1 = f"AND FL1.OperatorIcao IN ({operator_icaos}) "
-        filter_string_2 = f"AND FL2.OperatorIcao IN ({operator_icaos}) "
-        filter_string_3 = f"AND FL3.OperatorIcao IN ({operator_icaos}) "
+        filter_string_1 = f"AND FL1.OperatorIcao IN ({operator_icaos})"
+        filter_string_2 = f"AND FL2.OperatorIcao IN ({operator_icaos})"
+        filter_string_3 = f"AND FL3.OperatorIcao IN ({operator_icaos})"
+        filter_string_stopovers = f"AND OperatorIcao IN ({operator_icaos})"
     distance = get_distance(lat_origin, lon_origin, lat_destination,
         lon_destination)
     max_distance = 16*math.sqrt(1e3)*math.sqrt(distance) + 1.05*distance
@@ -348,93 +353,111 @@ def flightsearch(request_data):
     destination_icaos = [x.Icao for x in cursor.fetchall()]
     destinations = ','.join(map(repr, destination_icaos))
     logger.debug(f'destinations: {destinations}')
-    if stops == 0:
-        sql_query = f"""
-            SELECT DISTINCT 
-            FL1.Origin || '-' || FL1.Destination AS Route,         
-            FL1.Length AS TotalLength, 0 AS Stops  
-            FROM FlightLegs FL1 
-            WHERE FL1.Origin IN ({origins}) 
-            AND FL1.Destination IN ({destinations}) 
-            {filter_string_1}
-            AND TotalLength < {max_distance};
-            """
-    elif stops == 1:
-        sql_query = f"""
-            SELECT DISTINCT 
-            FL1.Origin || '-' || FL1.Destination AS Route,     
-            FL1.Length AS TotalLength, 0 AS Stops  
-            FROM FlightLegs FL1 
-            WHERE FL1.Origin IN ({origins}) 
-            AND FL1.Destination IN ({destinations}) 
-            {filter_string_1}
-            AND TotalLength < {max_distance} 
-            UNION
-            SELECT DISTINCT 
-            FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination AS  
-            Route, (FL1.Length+FL2.Length) AS TotalLength, 1 AS Stops  
-            FROM FlightLegs FL1, FlightLegs FL2 
-            WHERE FL1.Origin IN ({origins}) 
-            AND FL2.Destination IN ({destinations}) 
-            AND FL1.Destination=FL2.Origin 
-            {filter_string_1} 
-            {filter_string_2} 
-            AND TotalLength < {max_distance} 
-            """
-    elif stops == 2:
-        sql_query = f"""
-            SELECT DISTINCT
-            FL1.Origin || '-' || FL1.Destination AS Route,    
-            FL1.Length AS TotalLength, 0 AS Stops  
-            FROM FlightLegs FL1 
-            WHERE FL1.Origin IN ({origins}) 
-            AND FL1.Destination IN ({destinations}) 
-            {filter_string_1} 
-            AND TotalLength < {max_distance} 
-            UNION
-            SELECT DISTINCT 
-            FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination AS  
-            Route, (FL1.Length+FL2.Length) AS TotalLength, 1 AS Stops  
-            FROM FlightLegs FL1, FlightLegs FL2 
-            WHERE FL1.Origin IN ({origins}) 
-            AND FL2.Destination IN ({destinations}) 
-            AND FL1.Destination=FL2.Origin 
-            {filter_string_1} 
-            {filter_string_2} 
-            AND TotalLength < {max_distance} 
-            UNION
-            SELECT DISTINCT 
-            FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination ||
-            '-' || FL3.Destination AS Route, 
-            FL1.Length+FL2.Length+FL3.Length AS TotalLength, 2 AS Stops  
-            FROM FlightLegs FL1, FlightLegs FL2, FlightLegs FL3 
-            WHERE FL1.Origin IN ({origins}) 
-            AND FL3.Destination IN ({destinations}) 
-            AND FL2.Destination != FL1.Origin 
-            AND FL3.Destination != FL2.Origin 
-            AND FL1.Destination=FL2.Origin AND FL2.Destination=FL3.Origin
-            {filter_string_1} 
-            {filter_string_2} 
-            {filter_string_3} 
-            AND TotalLength < {max_distance} 
-            """
-    else:
-        sql_query = ''
-    if not origins or not destinations or not sql_query:
+    if not origins or not destinations:
         cursor.close()
         connection.close()
         return []
+    sql_query = f"""
+        SELECT DISTINCT
+        FL1.Origin || '-' || FL1.Destination AS Route,
+        FL1.Length AS TotalLength, 0 AS Stops
+        FROM FlightLegs FL1
+        WHERE FL1.Origin IN ({origins})
+        AND FL1.Destination IN ({destinations})
+        {filter_string_1}
+        AND TotalLength < {max_distance};
+        """
     logger.debug(f'flight search query: {sql_query}')
     cursor.execute(sql_query)
     sql_results = cursor.fetchall()
+    direct_routes = [f"{x.Route}" for x in sql_results]
+    logger.info(f'found {len(direct_routes)} direct routes.')
+    logger.debug('direct_routes: {direct_routes}')
+    if stops == 0 or len(direct_routes) > 10:
+        cursor.close()
+        connection.close()
+        return direct_routes
+    sql_query = f"""
+        SELECT DISTINCT
+        FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination AS
+        Route, (FL1.Length+FL2.Length) AS TotalLength, 1 AS Stops
+        FROM FlightLegs FL1, FlightLegs FL2
+        WHERE FL1.Origin IN ({origins})
+        AND NOT FL1.Destination IN ({destinations})
+        AND FL2.Destination IN ({destinations})
+        AND NOT FL2.Origin IN ({origins})
+        AND FL1.Destination=FL2.Origin
+        {filter_string_1}
+        {filter_string_2}
+        AND TotalLength < {max_distance}
+        """
+    logger.debug(f'flight search query: {sql_query}')
+    cursor.execute(sql_query)
+    sql_results = cursor.fetchall()
+    single_stopover_routes = [f"{x.Route}" for x in sql_results]
+    logger.info(f'found {len(single_stopover_routes)} single stopover routes.')
+    logger.debug('single_stopover_routes: {single_stopover_routes}')
+    if stops == 1 or len(single_stopover_routes + direct_routes) > 10:
+        cursor.close()
+        connection.close()
+        return direct_routes + single_stopover_routes
+    sql_query_stopover_origins = f"""
+        SELECT DISTINCT Destination FROM FlightLegs
+        WHERE Origin IN ({origins})
+        AND Length < {max_distance}
+        AND NOT Destination IN ({destinations})
+        {filter_string_stopovers}
+        """
+    cursor.execute(sql_query_stopover_origins)
+    stopover_origin_icaos = set([x.Destination for x in cursor.fetchall()])
+    sql_query_stopover_destinations = f"""
+        SELECT DISTINCT Origin FROM FlightLegs
+        WHERE Destination IN ({destinations})
+        AND Length < {max_distance}
+        AND NOT Origin IN ({origins})
+        {filter_string_stopovers}
+        """
+    cursor.execute(sql_query_stopover_destinations)
+    stopover_destination_icaos = [x.Origin for x in cursor.fetchall()]
+    stopover_origins = ','.join(map(repr, stopover_origin_icaos))
+    stopover_destinations = ','.join(map(repr,stopover_destination_icaos))
+    logger.debug(f'stopover destinations: {stopover_destinations}')
+    logger.debug(f'stopover origins: {stopover_origins}')
+    sql_query = f"""
+        SELECT DISTINCT
+        FL1.Origin || '-' || FL1.Destination || '-' || FL2.Destination ||
+        '-' || FL3.Destination AS Route,
+        FL1.Length+FL2.Length+FL3.Length AS TotalLength, 2 AS Stops
+        FROM FlightLegs FL1, FlightLegs FL2, FlightLegs FL3
+        WHERE FL1.Origin IN ({origins})
+        AND NOT FL1.Destination IN ({destinations})
+        AND FL1.Destination IN ({stopover_origins})
+        AND FL3.Destination IN ({destinations}) 
+        AND NOT FL3.Origin IN ({origins})
+        AND FL3.Origin IN ({stopover_destinations})
+        AND FL2.Origin IN ({stopover_origins})
+        AND FL2.Destination IN ({stopover_destinations})
+        AND FL2.Destination != FL1.Origin
+        AND FL3.Destination != FL2.Origin
+        AND FL1.Destination=FL2.Origin AND FL2.Destination=FL3.Origin
+        {filter_string_1}
+        {filter_string_2}
+        {filter_string_3}
+        AND TotalLength < {max_distance}
+        """
+    logger.debug(f'flight search query: {sql_query}')
+    cursor.execute(sql_query)
+    sql_results = cursor.fetchall()
+    double_stopover_routes = [f"{x.Route}" for x in sql_results]
+    logger.info(f'found {len(double_stopover_routes)} double stopover routes.')
+    logger.debug('double_stopover_routes: {double_stopover_routes}')
     cursor.close()
     connection.close()
-    routes = [f"{x.Route}" for x in sql_results]
-    logger.debug('routes: {routes}')
-    return routes
+    return direct_routes + single_stopover_routes + double_stopover_routes
 
 @timeit
 def get_geojson_flightsearch(request_data):
+    _airport_positions = get_airport_positions()
     _feature_collection = {
         "type": "FeatureCollection", "features": [{"type": "Feature",
         "properties": {}, "geometry": {"type": "MultiLineString",
@@ -446,11 +469,10 @@ def get_geojson_flightsearch(request_data):
         _line_coordinates = []
         _route_items = _route.split('-')
         for _icao in _route_items:
-            _info = get_airport_position(_icao)
-            if _info is None:
-                _line_coordinates = []
+            _airport_coordinates = _airport_positions.get(_icao)
+            if _airport_coordinates is None:
                 break
-            _line_coordinates.append([_info.Longitude, _info.Latitude])
+            _line_coordinates.append(_airport_coordinates)
         if len(_line_coordinates) > 0:
             _coordinates.append(_line_coordinates)
     _feature_collection['features'] = [{"type": "Feature",
