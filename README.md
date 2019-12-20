@@ -73,6 +73,27 @@ hypercorn -w8 -b 0.0.0.0:5000 backend_fastapi:app
 The number of workers is defined via the -w argument. Instead of using multiple workers the --reload argument would restart the worker as soon as any source code is changed.
 #### Build and run as a Docker container
 ```
-docker build -t flightroute_europe_simple ./
-docker run -d -p 80:80 --mount src=`pwd`/flightroutes,target=/app/flightroutes,type=bind flightmap_europe_simple
+docker build -t flightmap_europe_simple ./
+docker run -d -p 8000:80 --mount src=`pwd`/flightroutes,target=/app/flightroutes,type=bind flightmap_europe_simple
 ```
+or for the alpine based image which consumes less disk space (recommended):
+```
+docker build -t flightmap_europe_simple:alpine -f Dockerfile.alpine ./
+docker run -d -p 8000:80 --mount src=`pwd`/flightroutes,target=/app/flightroutes,type=bind flightmap_europe_simple:alpine
+```
+#### Downloading images from hub.docker.com
+Instead of building the image, you may try to download it from hub.docker.com. 
+Simply use jaluebbe/flightmap_europe_simple or jaluebbe/flightmap_europe_simple:alpine as image to run.
+
+### Accessing the API and web interface
+
+You'll find an interative map at http://127.0.0.1:8000 . 
+You may click on airports to show all known destinations. 
+A click on an aircraft shows its current route if it is known. 
+Alternatively, you may enter a callsign to show the respective flight route. 
+Searching for an operator ICAO shows all known connections of this operator. 
+
+An interactive flightsearch is available at http://127.0.0.1:8000/flightsearch.html . 
+You may click on two loction on the map to set origin an destination of you trip. 
+Now select the maximum acceptable distance between origin, destination and the respective airports. 
+Finally, select the maximum acceptable number of stops and filter for an airline alliance if required.

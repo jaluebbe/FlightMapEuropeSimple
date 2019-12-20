@@ -1,0 +1,23 @@
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
+RUN pip install --upgrade pip \
+    && pip install aiofiles \
+    && rm -rf ~/.cache/pip/*
+COPY static /app/static
+COPY backend_vrs_db.py /app/
+COPY backend_fastapi.py /app/main.py
+
+#RUN apk --no-cache add hdf5 hdf5-dev libffi-dev --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ \
+#    && apk --update --no-cache --virtual .build-dep add \
+#    build-base \
+#    && pip install --upgrade pip \
+#    && pip install cython \
+#    && pip install pytest \
+#    && pip install h5py \
+#    && pip install numpy \
+#    && pip install pygeodesy \
+#    && pip install geojson \
+#    && pip install aiofiles \
+#    && cd src && sh compile.sh && cd .. \
+#    && pip uninstall cython -y \
+#    && apk del --purge hdf5-dev libffi-dev .build-dep \
+#    && rm -rf ~/.cache/pip/*
