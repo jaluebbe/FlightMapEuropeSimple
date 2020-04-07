@@ -3,7 +3,14 @@ map.getPane('firs').style.zIndex = 390;
 
 var airspaceData;
 
+function clickAirspace(eo) {
+    return;
+}
+
 function onEachFeatureFir(feature, layer) {
+    layer.on('click', function(eo) {
+        clickAirspace(eo);
+    });
     var tooltipContent =
         "" + feature.properties.AV_NAME +
         " (" + feature.properties.AV_AIRSPAC + ")<BR>FL" +
@@ -32,7 +39,7 @@ var upperAirspace = L.geoJSON([], {
             };
         }
     }
-}).addTo(map);
+});
 
 var lowerAirspace = L.geoJSON([], {
     onEachFeature: onEachFeatureFir,
@@ -48,7 +55,7 @@ var lowerAirspace = L.geoJSON([], {
             color: "grey"
         };
     }
-});
+}).addTo(map);
 
 var singleAirspace = L.geoJSON([], {
     onEachFeature: onEachFeatureFir,
