@@ -31,7 +31,7 @@ async def root():
     return FileResponse('static/flightmap_europe_simple.html')
 
 @app.get("/flightsearch.html", include_in_schema=False)
-async def root():
+async def flightsearch():
     return FileResponse('static/flightsearch.html')
 
 @app.get("/api/geojson/airports")
