@@ -395,7 +395,7 @@ mid_region = _feature = {
 kzny_region = _feature = {
     "properties": {
         "AV_NAME": "NEW YORK OCEANIC EAST FIR",
-        "AV_AIRSPAC": "KZNYFIR",
+        "AV_AIRSPAC": "KZWYFIR",
         "MIN_FLIGHT": 0, "MAX_FLIGHT": 999, "UL_VISIBLE": "both"},
     "type": "Feature",
     "geometry": kzny_shape,
