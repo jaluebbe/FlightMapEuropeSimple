@@ -52,7 +52,7 @@ russia_polygons = []
 asia_polygons = []
 mid_polygons =[]
 sam_polygons = []
-kzny_polygons = []
+kzwy_polygons = []
 uaaa_polygons = []
 utaa_polygons = []
 
@@ -81,9 +81,9 @@ for _feature in faa_airspace_data['features']:
     if (_feature['properties']['TYPE_CODE'] == 'FIR' and
         _feature['properties']['IDENT'] in ['KZWY']):
         _polygon = shape(_feature['geometry'])
-        kzny_polygons.append(_polygon)
+        kzwy_polygons.append(_polygon)
 nam_shape = cascaded_union(nam_polygons)
-kzny_shape = cascaded_union(kzny_polygons)
+kzwy_shape = cascaded_union(kzwy_polygons)
 # closing gaps between USA and Canada
 nam_shape = nam_shape.union(Polygon(
     [[-117.9, 35.3], [-100.9, 31.8], [-90.1, 30], [-79.8, 31.7], [-75, 35.5],
@@ -199,12 +199,9 @@ for firuir in nm_data['features']:
         'HCSM', 'DRRR', 'DNKK', 'HKNA', 'HTDC', 'HRYR', 'HBBA', 'HUEC', 'HAAA']:
         _polygon = shape(firuir['geometry'])
         afi_polygons.append(_polygon)
-    if firuir['properties']['AV_AIRSPAC'][:4] in ['KZWY']:
-        _polygon = shape(firuir['geometry'])
-        kzny_shape = kzny_shape.union(_polygon)
     if firuir['properties']['AV_AIRSPAC'][:4] in ['CZQX']:
         _polygon = shape(firuir['geometry'])
-        kzny_shape = kzny_shape.difference(_polygon)
+        kzwy_shape = kzwy_shape.difference(_polygon)
     if firuir['properties']['AV_AIRSPAC'][:4] in ['YYYY', 'VVVV', 'ZYYY',
         'RJJJ', 'OOOO',]:
         _polygon = shape(firuir['geometry'])
@@ -289,12 +286,8 @@ for firuir in nm_data['features']:
 sam_shape = sam_shape.difference(icao_south_hole)
 car_shape = car_shape.difference(nam_shape)
 
-# remove small parts of KZNY between KZWY and NAM shapes
-kzny_shape = kzny_shape.difference(Polygon([[-77.8, 26.8], [-69.6, 26.8],
-    [-69.6, 35.5], [-77.8, 35.5], [-77.8, 26.8]]))
-kzny_shape = kzny_shape.difference(car_shape)
-nam_shape = nam_shape.difference(kzny_shape)
-
+nam_shape = nam_shape.difference(kzwy_shape)
+car_shape = car_shape.difference(kzwy_shape)
 sam_shape = sam_shape.union(Polygon([[-78.4, 7.3], [-76.8, 6.9], [-77.3, 9.1]]))
 car_shape = car_shape.difference(sam_shape)
 
@@ -394,14 +387,14 @@ mid_region = _feature = {
     "geometry": mid_shape,
     "bbox": mid_shape.bounds
 }
-kzny_region = _feature = {
+kzwy_region = _feature = {
     "properties": {
         "AV_NAME": "NEW YORK OCEANIC EAST FIR",
         "AV_AIRSPAC": "KZWYFIR",
         "MIN_FLIGHT": 0, "MAX_FLIGHT": 999, "UL_VISIBLE": "both"},
     "type": "Feature",
-    "geometry": kzny_shape,
-    "bbox": kzny_shape.bounds
+    "geometry": kzwy_shape,
+    "bbox": kzwy_shape.bounds
 }
 sam_region = _feature = {
     "properties": {
@@ -416,7 +409,7 @@ polygon = shape(olbbuir['geometry'])
 olbbuir['bbox'] = list(polygon.bounds)
 ec_data['features'].extend([
     uaaa_region, utaa_region, gvscuir, olbbuir, afi_region, mid_region,
-    sam_region, russia_region, kzny_region, car_region, nam_region, asia_region,
+    sam_region, russia_region, kzwy_region, car_region, nam_region, asia_region,
     ])
 
 for feature in ec_data['features']:
