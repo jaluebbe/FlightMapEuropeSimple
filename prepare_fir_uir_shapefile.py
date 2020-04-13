@@ -146,6 +146,7 @@ for firuir in nm_data['features']:
         gvscuir['properties']['AV_NAME'] = 'SAL OCEANIC UIR'
         gvscuir['properties']['AV_AIRSPAC'] = 'GVSCUIR'
         gvscuir['properties']['UL_VISIBLE'] = 'upper'
+        gvscuir['bbox'] = list(shape(gvscuir['geometry']).bounds)
     elif firuir['properties']['AV_AIRSPAC'] == 'GOOOFIR':
         if firuir['properties']['MIN_FLIGHT'] ==0:
             firuir['properties']['AV_NAME'] = 'DAKAR FIR'
