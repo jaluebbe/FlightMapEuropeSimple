@@ -253,7 +253,9 @@ for firuir in ead_data['features']:
         car_shape = car_shape.difference(_polygon)
 # fill residual gaps
 sam_shape = sam_shape.union(Polygon(
-    [[-90, -15], [-135, -15], [-135, -89], [-90, -89]]))
+    [[-90, -15], [-135, -15], [-135, -89], [-90, -89]])).union(   
+    Polygon([[-80.6, 6.05], [-75.59, 6.05], [-75.59, 9.71], [-80.6, 9.71],
+    [-80.6, 6.05]]))
 asia_shape = asia_shape.union(Polygon(
     [[180, -45.5], [180, 18.1], [107.6, 15.5], [101.8, -9.1]]))
 asia_shape = asia_shape.union(Polygon(
