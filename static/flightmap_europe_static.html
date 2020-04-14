@@ -28,7 +28,7 @@
 </body>
 <script type="text/javascript">
     loadAirportData();
-    loadFirUirShapes();
+    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
     refreshAircraftPositions();
     var myInterval = window.setInterval("refreshAircraftPositions()", 10000);
 </script>

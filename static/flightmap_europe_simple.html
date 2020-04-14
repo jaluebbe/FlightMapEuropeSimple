@@ -30,7 +30,7 @@
 <script type="text/javascript">
     refreshAirportData();
     window.setInterval("refreshAirportData()", 60000);
-    loadFirUirShapes();
+    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
     refreshAircraftPositions();
     window.setInterval("refreshAircraftPositions()", 10000);
 </script>
