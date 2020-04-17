@@ -22,11 +22,6 @@ and another shapefile found at
 https://github.com/euctrl-pru/eurocontrol-atlas/blob/master/zip/FirUir_EAD.zip .
 The preparation script may be modified to show other regions in more detail. 
 
-The GeoJSON shapefile icao_regions_simplified is originated from 
-https://github.com/euctrl-pru/pruatlas/blob/master/data-raw/icao_regions.json 
-and was simplified by calling prepare_icao_regions.py to save computing 
-resources.
-
 ## Airport shapefiles
 The shapefile containing the airports for the static version of the map is 
 created using prepare_static_airports.py . 
