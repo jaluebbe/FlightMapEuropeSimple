@@ -107,6 +107,9 @@ for firuir in nm_data['features']:
         firuir['properties']['AV_NAME'] = 'ALGER FIR'
     elif firuir['properties']['AV_AIRSPAC'] == 'UTDDFIR':
         firuir['properties']['AV_NAME'] = 'DUSHANBE FIR'
+        utdd_shape = shape(firuir['geometry'])
+    elif firuir['properties']['AV_AIRSPAC'] == 'UCFFFIR':
+        ucff_shape = shape(firuir['geometry'])
     elif firuir['properties']['AV_AIRSPAC'] == 'UTTTFIR':
         firuir['properties']['AV_NAME'] = 'UZBEKISTAN MERGED FIRS'
     elif firuir['properties']['AV_AIRSPAC'] == 'HAAAFIR':
@@ -313,6 +316,8 @@ nam_shape = nam_shape.difference(asia_shape)
 asia_shape = asia_shape.difference(mid_shape)
 asia_shape = asia_shape.difference(uaaa_shape)
 asia_shape = asia_shape.difference(utaa_shape)
+asia_shape = asia_shape.difference(utdd_shape)
+asia_shape = asia_shape.difference(ucff_shape)
 nam_shape = nam_shape.intersection(total_bounds)
 
 afi_shape = cascaded_union(afi_polygons)
