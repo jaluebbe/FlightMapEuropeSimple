@@ -7,6 +7,10 @@ function clickAirspace(eo) {
     return;
 }
 
+function styleAirspace(feature, styleProperties) {
+    return styleProperties;
+}
+
 function onEachFeatureFir(feature, layer) {
     layer.on('click', function(eo) {
         clickAirspace(eo);
@@ -31,12 +35,12 @@ var upperAirspace = L.geoJSON([], {
     },
     style: function(feature) {
         if (feature.properties.UL_VISIBLE == 'upper') {
-            return {
+            return styleAirspace(feature, {
                 fillColor: "#003399",
                 fillOpacity: 0.1,
                 weight: 1.5,
                 color: "grey"
-            };
+            });
         }
     }
 });
@@ -48,12 +52,12 @@ var lowerAirspace = L.geoJSON([], {
         return ('lower'.includes(feature.properties.UL_VISIBLE))
     },
     style: function(feature) {
-        return {
+        return styleAirspace(feature, {
             fillColor: "#ffcc00",
             fillOpacity: 0.15,
             weight: 1.5,
             color: "grey"
-        };
+        });
     }
 }).addTo(map);
 
@@ -64,12 +68,12 @@ var singleAirspace = L.geoJSON([], {
         return ('both'.includes(feature.properties.UL_VISIBLE))
     },
     style: function(feature) {
-        return {
+        return styleAirspace(feature, {
             fillColor: "#00ee00",
             fillOpacity: 0.1,
             weight: 1.5,
             color: "grey"
-        };
+        });
     }
 
 }).addTo(map);
