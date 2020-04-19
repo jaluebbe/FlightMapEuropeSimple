@@ -1,9 +1,6 @@
 map.createPane('firs');
 map.getPane('firs').style.zIndex = 390;
 
-map.createPane('regions');
-map.getPane('regions').style.zIndex = 389;
-
 var airspaceData;
 
 function clickAirspace(eo) {
@@ -77,35 +74,12 @@ var singleAirspace = L.geoJSON([], {
 
 }).addTo(map);
 
-var icaoRegions = L.geoJSON([], {
-    onEachFeature: function(feature, layer) {
-        var tooltipContent =
-            "" + feature.properties.NAME + " region";
-        layer.bindTooltip(tooltipContent, {
-            sticky: true,
-            direction: "top",
-            offset: [0, -5]
-        });
-    },
-    pane: 'regions',
-    style: function(feature) {
-        return {
-            fillColor: "#dddddd",
-            fillOpacity: 0.1,
-            weight: 1.5,
-            color: "black"
-        };
-    }
-});
-
 var lowerAirspaceLabel = "<span style='background-color:rgba(255, 204, 0, 0.2)'>Lower Airspace (FIRs)</span>";
 var upperAirspaceLabel = "<span style='background-color:rgba(0, 51, 153, 0.2)'>Upper Airspace (UIRs)</span>";
 var singleAirspaceLabel = "<span style='background-color:rgba(0, 238, 0, 0.2)'>Airspaces (FIR/UIR)</span>";
-var icaoRegionsLabel = "<span style='background-color:rgba(221, 221, 221, 0.2)'>ICAO regions</span>";
 layerControl.addOverlay(lowerAirspace, lowerAirspaceLabel);
 layerControl.addOverlay(upperAirspace, upperAirspaceLabel);
 layerControl.addOverlay(singleAirspace, singleAirspaceLabel);
-layerControl.addOverlay(icaoRegions, icaoRegionsLabel);
 layerControl.addTo(map);
 
 function reloadAircraftPositions() {
@@ -150,20 +124,6 @@ function loadFirUirShapes(shapefile='./static/flightmap_europe_fir_uir.json') {
             refreshAirspaces();
         }
 
-    };
-    xhr.send();
-}
-
-function loadIcaoRegions(shapefile = './static/icao_regions_simplified.json') {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', shapefile);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            airspaceData = JSON.parse(xhr.responseText);
-            icaoRegions.clearLayers();
-            icaoRegions.addData(airspaceData);
-        }
     };
     xhr.send();
 }
