@@ -63,9 +63,14 @@
     var data = [];
     var names = [];
     var show_percentage = false;
+    var d3colors = Plotly.d3.scale.category10();
+    var firColors = new Map();
+
 
     function plotStatistics() {
         data.length = 0;
+        firColors.clear();
+        var i = 0;
         selection.forEach(function(airspace) {
             var firUirData = firUirStatistics[airspace];
             data.push({
@@ -75,6 +80,8 @@
                     "<br>(" + airspace + ")",
                 type: 'scatter'
             });
+            firColors.set(airspace, d3colors(i));
+            i++;
         });
         if (selection.size == 0) {
             data.push({
@@ -98,15 +105,18 @@
                 },
                 {
                     name: 'reset selection to world view',
-                    icon: Plotly.Icons.undo, //globe_icon,
+                    icon: Plotly.Icons.undo,
                     click: function(gd) {
                         selection.clear();
                         plotStatistics()
+                        refreshAirspaces();
                     }
                 },
             ],
-            modeBarButtonsToRemove: ['select2d', 'lasso2d', 'toggleSpikelines',
-                'zoomIn2d', 'zoomOut2d', 'resetScale2d'
+            modeBarButtonsToRemove: [
+                'select2d', 'lasso2d', 'toggleSpikelines', 'zoomIn2d',
+                'zoomOut2d', 'resetScale2d', 'hoverClosestCartesian',
+                'hoverCompareCartesian'
             ],
             displaylogo: false,
             responsive: true,
@@ -149,10 +159,21 @@
         names[feature.properties.AV_AIRSPAC] = feature.properties.AV_NAME;
         if (selection.has(feature.properties.AV_AIRSPAC)) {
             selection.delete(feature.properties.AV_AIRSPAC);
-        } else {
+        } else if (selection.size < 10) {
             selection.add(feature.properties.AV_AIRSPAC);
+        } else {
+            console.error('Selection too large. Unselect airspaces or reset selection.');
         }
         plotStatistics();
+        refreshAirspaces();
+    }
+
+    function styleAirspace(feature, styleProperties) {
+        if (selection.has(feature.properties.AV_AIRSPAC)) {
+            styleProperties.fillColor = firColors.get(feature.properties.AV_AIRSPAC);
+            styleProperties.fillOpacity = 0.4;
+        }
+        return styleProperties;
     }
 
     function loadFirUirStatistics() {
