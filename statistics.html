@@ -16,12 +16,24 @@
             min-height: 285px;
             height: 42%;
         }
+
+        #statistics {
+            width: 98%;
+            min-width: 325px;
+            height: 430px;
+            padding: 1em;
+            border: 1px;
+        }
+
+        #explanation {
+            padding: 1em;
+        }
     </style>
 </head>
 
 <body>
     <div id="map"></div>
-    <div id="statistics" style="min-width:325px;height:430px;padding: 1em;border: 1px"></div>
+    <div id="statistics"></div>
     <div id="explanation">
         <h3>Usage</h3>
         Click in any FIR/UIR to display the respective development of the number
@@ -65,7 +77,6 @@
     var show_percentage = false;
     var d3colors = Plotly.d3.scale.category10();
     var firColors = new Map();
-
 
     function plotStatistics() {
         data.length = 0;
@@ -120,16 +131,15 @@
             ],
             displaylogo: false,
             responsive: true,
-            displayModeBar: !L.Browser.mobile
+            displayModeBar: true
         };
         var layout = {
             margin: {
-                t: 30,
+                t: 20,
                 r: 0,
                 b: 0,
                 l: 0
             },
-            title: 'Data from OpenSky Network',
             xaxis: {
                 automargin: true,
                 title: {
@@ -145,7 +155,7 @@
                 },
                 rangemode: 'tozero',
             },
-            showlegend: true
+            showlegend: !L.Browser.mobile
         };
         Plotly.react('statistics', data, layout, config);
     }
@@ -200,7 +210,9 @@
         };
         xhr.send();
     }
-
+    map.attributionControl.addAttribution(
+        'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
+    );
     loadFirUirShapes();
     loadFirUirStatistics();
     loadFlightStatistics();
