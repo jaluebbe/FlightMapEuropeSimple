@@ -52,7 +52,7 @@
         as well as from the
         <a href='https://opensky-network.org/data/impala'>
             OpenSky Network historical database</a>
-        at intervals between 10 seconds and 15 minutes.
+        at intervals between 10 seconds and 5 minutes.
         State vectors with incomplete positional information or on_ground state
         were ignored.
         This statistics is focused on airline flights and should ignore general
@@ -213,7 +213,7 @@
     map.attributionControl.addAttribution(
         'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
     );
-    loadFirUirShapes();
+    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
     loadFirUirStatistics();
     loadFlightStatistics();
 </script>
