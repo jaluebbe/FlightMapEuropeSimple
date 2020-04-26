@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <title>Flight statistics</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha384-eS4bw6aEvhCSXWGP85ANR/N8isWKzT7P36NvcuTJGkrj6wsbxLVpXslrNXYHyseD" crossorigin="anonymous">
+    <link rel="stylesheet" href="static/flightmap.css">
+    <style>
+        #map {
+            width: 98%;
+            min-width: 325px;
+            min-height: 285px;
+            height: 42%;
+        }
+
+        #statistics {
+            width: 98%;
+            min-width: 325px;
+            height: 430px;
+            padding: 1em;
+            border: 1px;
+        }
+
+        #explanation {
+            padding: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="statistics"></div>
+    <div id="explanation">
+        <h3>Usage</h3>
+        Click in any FIR/UIR to display the respective development of the number
+        of airline flights in the year 2020. You may select multiple airspaces
+        at the same time. Clicking a second time on the same airspace deselects
+        it. Switching between FIRs and UIRs on the map is done via the legend.
+        The view can be toggled between absolute numbers and a percentage
+        related to the average number of flights in the first ten days of the
+        year.
+        <h3>Content</h3>
+        Some regions don't discriminate between FIR and UIR or
+        have been simplified due to a lack of reliable openly available shape
+        files and to save computation power in data processing.
+        Aircraft position data was consumed as state vectors from the
+        <a href='https://opensky-network.org/apidoc/'>OpenSky Network API</a>
+        as well as from the
+        <a href='https://opensky-network.org/data/impala'>
+            OpenSky Network historical database</a>
+        at intervals between 10 seconds and 5 minutes.
+        State vectors with incomplete positional information or on_ground state
+        were ignored.
+        This statistics is focused on airline flights and should ignore general
+        aviation. Only callsigns matching the following regular expression have
+        been processed:
+        <code>^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)([A-Z]{2}))$</code>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha384-bmPowDlt+owc6Mn3LwOzLPkYiVm6MuKeLMe0qN2pp7Fhmux2xtVJm5e+ekpCVv4x" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="static/flightmap.js"></script>
+    <script type="text/javascript" src="static/airspaces_static.js"></script>
+    <script type="text/javascript" src="static/upper_lower_airspace_limits.js"></script>
+    <script type="text/javascript" src="static/statistics.js"></script>
+</body>
+<script type="text/javascript">
+    map.doubleClickZoom.disable();
+    map.attributionControl.addAttribution(
+        'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
+    );
+    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
+    loadFirUirStatistics();
+    loadFlightStatistics();
+</script>
+
+</html>

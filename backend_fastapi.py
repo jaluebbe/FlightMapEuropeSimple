@@ -34,6 +34,10 @@ async def root():
 async def flightsearch():
     return FileResponse('static/flightsearch.html')
 
+@app.get("/statistics.html", include_in_schema=False)  
+async def statistics():  
+    return FileResponse('static/statistics.html') 
+
 @app.get("/api/geojson/airports")
 def get_geojson_airports():
     return backend_vrs_db.get_geojson_airports()
