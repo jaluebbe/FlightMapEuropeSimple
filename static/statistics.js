@@ -16,8 +16,7 @@ function plotStatistics() {
         data.push({
             x: firUirData.Dates,
             y: show_percentage ? firUirData.percentage : firUirData.FlightsDetected,
-            name: "" + names[airspace] +
-                "<br>(" + airspace + ")",
+            name: "" + names[airspace],
             type: 'scatter'
         });
         firColors.set(airspace, d3colors(i));
