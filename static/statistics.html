@@ -59,6 +59,12 @@
         aviation. Only callsigns matching the following regular expression have
         been processed:
         <code>^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)([A-Z]{2}))$</code>
+        <br>
+        For simplicity, the COVID-19 related data is shown for the whole
+        world only. Much more information can be found at the source of the
+        dataset:<br>
+        <a href='https://ourworldindata.org/coronavirus'>Max Roser, Hannah Ritchie, Esteban Ortiz-Ospina and Joe Hasell
+        (2020) - "Coronavirus Pandemic (COVID-19)"</a>
     </div>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha384-bmPowDlt+owc6Mn3LwOzLPkYiVm6MuKeLMe0qN2pp7Fhmux2xtVJm5e+ekpCVv4x" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
@@ -76,6 +82,7 @@
     loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
     loadFirUirStatistics();
     loadFlightStatistics();
+    loadCovidData();
 </script>
 
 </html>
