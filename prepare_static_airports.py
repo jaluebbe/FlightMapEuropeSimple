@@ -7,15 +7,10 @@ import clip_geojson_precision
 
 CSV_URL = 'https://ourairports.com/data/airports.csv'
 
-ignored_icaos = ['SDZY', 'FAJS', 'KCVC', 'OPDD', 'OP17', 'UA30', 'VO55',]
+ignored_icaos = ['OPDD', 'OP17', 'VO55', 'EK_4']
 ignored_types = []
 # possible types: 'balloonport', 'heliport', 'seaplane_base', 'small_airport',
 # 'medium_airport', 'large_airport', ''
-
-airport_id_replacement = {
-    'FLLS': 'FLKK', 'HE13': 'HECP', 'LTGP': 'LTFG', 'SPIM': 'SPJC',
-    'SSZW': 'SBPG','UAFM': 'UCFM', 'VAGO': 'VOGO', 'VGZR': 'VHGS',
-    'YSCH': 'YCFS'}
 
 with requests.Session() as s:
     download = s.get(CSV_URL)
@@ -31,24 +26,14 @@ for row in reader:
     if len(row['gps_code']) != 4:
         continue
     if not len(row['iata_code']) in (0, 3):
-        continue
+        if row['iata_code'] == '0':
+            row['iata_code'] = ''
+        else:
+            continue
     if row['type'] == 'closed':
-        continue
-    if len(row['ident']) != 4:
         continue
     if len(row['iata_code']) != 3 and row['scheduled_service'] == 'no':
         continue
-    if row['ident'].upper() != row['gps_code'].upper():
-        if row['type'] == 'small_airport':
-            continue
-        row['ident'] = airport_id_replacement.get(row['ident'])
-        if row['ident'] is None:
-            continue
-    if row['name'] == 'Airport':
-        # useless information to identifiy the Airport
-        continue
-    if row['ident'] == 'EDDG':
-        print(row)
     _point = {"type": "Point", "coordinates": [float(row['longitude_deg']),
         float(row['latitude_deg'])]}
     _feature = {"geometry": _point, "type": "Feature", "properties": {
