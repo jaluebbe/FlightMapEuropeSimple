@@ -19,10 +19,10 @@
     <script type="text/javascript" src="static/flightmap.js"></script>
     <script type="text/javascript" src="static/airports.js"></script>
     <script type="text/javascript" src="static/flightsearch.js"></script>
+    <script>
+        refreshAirportData();
+        window.setInterval("refreshAirportData()", 60000);
+    </script>
 </body>
-<script type="text/javascript">
-    refreshAirportData();
-    window.setInterval("refreshAirportData()", 60000);
-</script>
 
 </html>

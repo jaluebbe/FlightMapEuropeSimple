@@ -89,16 +89,16 @@
     <script type="text/javascript" src="static/airspaces_static.js"></script>
     <script type="text/javascript" src="static/upper_lower_airspace_limits.js"></script>
     <script type="text/javascript" src="static/statistics.js"></script>
+    <script>
+        map.doubleClickZoom.disable();
+        map.attributionControl.addAttribution(
+            'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
+        );
+        loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
+        loadFirUirStatistics();
+        loadFlightStatistics();
+        loadCovidData();
+    </script>
 </body>
-<script type="text/javascript">
-    map.doubleClickZoom.disable();
-    map.attributionControl.addAttribution(
-        'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
-    );
-    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
-    loadFirUirStatistics();
-    loadFlightStatistics();
-    loadCovidData();
-</script>
 
 </html>

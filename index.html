@@ -25,13 +25,13 @@
     <script type="text/javascript" src="static/airspaces_static.js"></script>
     <script type="text/javascript" src="static/upper_lower_airspace_limits.js"></script>
     <script type="text/javascript" src="static/aircraft_static.js"></script>
+    <script>
+        loadAirportData();
+        loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
+        refreshAircraftPositions();
+        var myInterval = window.setInterval("refreshAircraftPositions()",
+        10000);
+    </script>
 </body>
-<script type="text/javascript">
-    loadAirportData();
-    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
-    refreshAircraftPositions();
-    var myInterval = window.setInterval("refreshAircraftPositions()",
-    10000);
-</script>
 
 </html>
