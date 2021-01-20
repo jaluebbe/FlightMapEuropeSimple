@@ -233,7 +233,8 @@ function styleAirspace(feature, styleProperties) {
     return styleProperties;
 }
 
-function loadFirUirStatistics(url = './static/fir_uir_statistics.json') {
+function loadFirUirStatistics(url) {
+    if (!url) url = './static/fir_uir_statistics.json';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -247,7 +248,8 @@ function loadFirUirStatistics(url = './static/fir_uir_statistics.json') {
     xhr.send();
 }
 
-function loadFlightStatistics(url = './static/flights_statistics.json') {
+function loadFlightStatistics(url) {
+    if (!url) url = './static/flights_statistics.json';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
@@ -260,7 +262,8 @@ function loadFlightStatistics(url = './static/flights_statistics.json') {
     xhr.send();
 }
 
-function loadCovidData(url = './static/covid_data.json') {
+function loadCovidData(url) {
+    if (!url) url = './static/covid_data.json';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.setRequestHeader('Content-Type', 'application/json');
