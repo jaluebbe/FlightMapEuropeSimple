@@ -118,7 +118,8 @@ function refreshAirspaces() {
     singleAirspace.addData(airspaceData);
 }
 
-function loadFirUirShapes(shapefile='./static/flightmap_europe_fir_uir.json') {
+function loadFirUirShapes(shapefile) {
+    if (!shapefile) shapefile = './static/flightmap_europe_fir_uir.json';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', shapefile);
     xhr.setRequestHeader('Content-Type', 'application/json');
