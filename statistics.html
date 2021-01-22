@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
@@ -17,7 +17,15 @@
             height: 42%;
         }
 
-        #statistics {
+        #fir_uir_statistics {
+            width: 98%;
+            min-width: 325px;
+            height: 350px;
+            padding: 1em;
+            border: 1px;
+        }
+
+        #world_statistics {
             width: 98%;
             min-width: 325px;
             height: 430px;
@@ -33,16 +41,17 @@
 
 <body>
     <div id="map"></div>
-    <div id="statistics"></div>
+    <div id="fir_uir_statistics"></div>
     <div id="explanation">
+        <h2>Flight statistics based on FIR/UIR</h2>
         <h3>Usage</h3>
-        Click in any FIR/UIR to display the respective development of the number
-        of airline flights in the year 2020. You may select multiple airspaces
+        Click on any airspace (FIR/UIR) on the map to display the respective development of the
+        number of airline flights during the COVID-19 pandemic. You may select multiple airspaces
         at the same time. Clicking a second time on the same airspace deselects
         it. Switching between FIRs and UIRs on the map is done via the legend.
         The view can be toggled between absolute numbers and a percentage
         related to the average number of flights in the first ten days of the
-        year.
+        year 2020.
         <h3>Content</h3>
         Some regions don't discriminate between FIR and UIR or
         have been simplified due to a lack of reliable openly available shape
@@ -59,30 +68,37 @@
         aviation. Only callsigns matching the following regular expression have
         been processed:
         <code>^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)([A-Z]{2}))$</code>
+        <hr>
+        <h2>World wide statistics</h2>
+        <div id="world_statistics"></div>
+        The flight statistics is based on <a href="https://opensky-network.org/">OpenSky Network</a>
+        data and was processed as described above.
         <br>
         For simplicity, the COVID-19 related data is shown for the whole
         world only. Much more information can be found at the source of the
-        dataset:<br>
+        dataset:
+        <br>
         <a href='https://ourworldindata.org/coronavirus'>Max Roser, Hannah Ritchie, Esteban Ortiz-Ospina and Joe Hasell
-        (2020) - "Coronavirus Pandemic (COVID-19)"</a>
+            (2020) - "Coronavirus Pandemic (COVID-19)"</a>
     </div>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha384-bmPowDlt+owc6Mn3LwOzLPkYiVm6MuKeLMe0qN2pp7Fhmux2xtVJm5e+ekpCVv4x" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script type="text/javascript" src="static/flightmap.js"></script>
-    <script type="text/javascript" src="static/airspaces_static.js"></script>
-    <script type="text/javascript" src="static/upper_lower_airspace_limits.js"></script>
-    <script type="text/javascript" src="static/statistics.js"></script>
+    <script src="static/polyfill_string_includes.js"></script>
+    <script src="static/flightmap.js"></script>
+    <script src="static/airspaces_static.js"></script>
+    <script src="static/upper_lower_airspace_limits.js"></script>
+    <script src="static/statistics.js"></script>
+    <script>
+        map.doubleClickZoom.disable();
+        map.attributionControl.addAttribution(
+            'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
+        );
+        loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
+        loadFirUirStatistics();
+        loadFlightStatistics();
+        loadCovidData();
+    </script>
 </body>
-<script type="text/javascript">
-    map.doubleClickZoom.disable();
-    map.attributionControl.addAttribution(
-        'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
-    );
-    loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
-    loadFirUirStatistics();
-    loadFlightStatistics();
-    loadCovidData();
-</script>
 
 </html>
