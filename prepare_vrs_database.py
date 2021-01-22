@@ -5,6 +5,7 @@ import sqlite3
 import gzip
 import numpy as np
 import math
+import json
 
 def get_distance(lat1, lon1, lat2, lon2):
     if None in (lat1, lon1, lat2, lon2):
@@ -23,8 +24,8 @@ if os.path.isfile(directory + "StandingData.sqb"):
     file_info['vrs'] = os.stat(directory + "StandingData.sqb").st_ctime
 
 def check_data():
-    if not os.path.isfile(directory + "StandingData.sqb") or (
-            time.time() - file_info['vrs'] > 86400):
+#    if not os.path.isfile(directory + "StandingData.sqb") or (
+#            time.time() - file_info['vrs'] > 86400):
         download_vrs_database()
         create_flightroute_table()
 
@@ -71,6 +72,22 @@ def create_flightroute_table():
         GROUP BY
             Callsign
         """)
+    with open(os.path.join(directory, "recurring_callsigns.json")) as f:
+        recurring_callsigns = json.load(f)['recurring_callsigns']
+
+    cursor.execute("DROP TABLE IF EXISTS RecentFlightRoutes")
+    cursor.execute("""
+        CREATE TABLE RecentFlightRoutes AS
+        SELECT
+            Callsign,
+            OperatorIcao,
+            Route
+        FROM
+            FlightRoute
+        WHERE
+            Callsign IN {}
+        """.format(tuple(recurring_callsigns)))
+
     cursor.execute("DROP TABLE IF EXISTS FlightLegs")
     cursor.execute("""
         CREATE TABLE FlightLegs AS
@@ -87,14 +104,14 @@ def create_flightroute_table():
                     SUBSTR(Route, 6, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 UNION
                 SELECT DISTINCT
                     SUBSTR(Route, 6, 4) AS Origin,
                     SUBSTR(Route, 11, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -103,7 +120,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 16, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -112,7 +129,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 21, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -121,7 +138,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 26, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -130,7 +147,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 31, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -139,7 +156,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 36, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -148,7 +165,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 41, 4) AS Destination,
                     OperatorIcao 
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -157,7 +174,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 46, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -166,7 +183,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 51, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
                 UNION
@@ -175,7 +192,7 @@ def create_flightroute_table():
                     SUBSTR(Route, 56, 4) AS Destination,
                     OperatorIcao
                 FROM
-                    FlightRoute
+                    RecentFlightRoutes
                 WHERE
                     LENGTH(Destination) > 0
             )
