@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <title>test page for airspace shapefiles</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <link rel="stylesheet" href="static/flightmap.css">
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
+    <script src="static/polyfill_string_includes.js"></script>
+    <script src="static/flightmap.js"></script>
+    <script src="static/airspaces_static.js"></script>
+    <script>
+        var testData;
+        var referenceData;
+
+        function filterTestShapes(feature) {
+            return true;
+        }
+
+        function filterReferenceShapes(feature) {
+            return true;
+        }
+
+        var testShapes = L.geoJSON([], {
+            onEachFeature: function(f, l) {
+                l.bindPopup('<pre>' + JSON.stringify(f.properties, null, ' ').replace(/[\{\}"]/g, '') + '</pre>');
+            },
+            filter: filterTestShapes,
+            style: {
+                fillColor: "#b22234",
+                fillOpacity: 0.15,
+                weight: 1.5,
+                color: "grey"
+            }
+        });
+
+        var referenceShapes = L.geoJSON([], {
+            onEachFeature: function(f, l) {
+                l.bindPopup('<pre>' + JSON.stringify(f.properties, null, ' ').replace(/[\{\}"]/g, '') + '</pre>');
+            },
+            filter: filterReferenceShapes,
+            style: {
+                fillColor: "#3c3b6e",
+                fillOpacity: 0.15,
+                weight: 1.5,
+                color: "grey"
+            }
+        });
+
+        layerControl.addOverlay(testShapes, "shapefile test");
+        layerControl.addOverlay(referenceShapes, "shapefile reference");
+
+        function loadTestShapes(shapefile) {
+            if (!shapefile) shapefile = './static/flightmap_fir_uir_north_america.json';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', shapefile);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    testData = JSON.parse(xhr.responseText);
+                    testShapes.clearLayers();
+                    testShapes.addData(testData);
+                }
+            };
+            xhr.send();
+        }
+
+        function loadReferenceShapes(shapefile) {
+            if (!shapefile) shapefile = './static/flightmap_europe_with_north_america.json';
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', shapefile);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    referenceData = JSON.parse(xhr.responseText);
+                    referenceShapes.clearLayers();
+                    referenceShapes.addData(referenceData);
+                }
+            };
+            xhr.send();
+        }
+
+        loadFirUirShapes('./static/flightmap_europe_fir_uir_ec_only.json');
+        loadTestShapes();
+        loadReferenceShapes();
+    </script>
+</body>
+
+</html>
