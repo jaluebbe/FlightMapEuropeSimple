@@ -26,17 +26,32 @@ for firuir in data['features']:
     if firuir['properties']['AV_NAME'] == 'CANARIS UIR':
         firuir['properties']['AV_NAME'] = 'CANARIAS UIR'
     if firuir['properties']['AV_AIRSPAC'] == 'EFINFIR':
+        firuir['properties']['AV_NAME'] = 'HELSINKI FIR'
         firuir['properties']['UL_VISIBLE'] = 'both'
         firuir['properties']['MAX_FLIGHT'] = 999
     elif firuir['properties']['AV_AIRSPAC'] == 'ENORFIR':
-        firuir['properties']['AV_NAME'] = 'NORWAY FIR'
+        firuir['properties']['AV_NAME'] = 'POLARIS FIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'EDMMFIR':
+        firuir['properties']['AV_NAME'] = 'MUENCHEN FIR'
     elif firuir['properties']['AV_AIRSPAC'] == 'LDZOFIR':
         firuir['properties']['AV_NAME'] = 'ZAGREB FIR/UIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'LGGGUIR':
+        firuir['properties']['AV_NAME'] = 'HELLAS UIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'LPPOFIR':
+        firuir['properties']['AV_NAME'] = 'SANTA MARIA OCEANIC FIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'LRBBFIR':
+        firuir['properties']['AV_NAME'] = 'BUCURESTI FIR'
     elif firuir['properties']['AV_AIRSPAC'] == 'UKBVUIR':
         firuir['properties']['AV_NAME'] = 'KYIV UIR'
         firuir['properties']['AV_AIRSPAC'] = 'UKBUUIR'
     elif firuir['properties']['AV_AIRSPAC'] == 'UKBVFIR':
         firuir['properties']['AV_NAME'] = 'KYIV FIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'UKDVFIR':
+        firuir['properties']['AV_NAME'] = 'DNIPRO FIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'UKLVFIR':
+        firuir['properties']['AV_NAME'] = 'LVIV FIR'
+    elif firuir['properties']['AV_AIRSPAC'] == 'UKOVFIR':
+        firuir['properties']['AV_NAME'] = 'ODESA FIR'
     elif firuir['properties']['AV_AIRSPAC'] == 'EKDKFIR':
         firuir['properties']['AV_NAME'] = 'KOEBENHAVN FIR'
     elif firuir['properties']['OBJECTID'] == 24929:
