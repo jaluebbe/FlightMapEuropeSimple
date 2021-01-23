@@ -1,0 +1,13 @@
+name: flightmap
+dependencies:
+  - python=3
+  - shapely
+  - gunicorn
+  - uvloop
+  - pip
+  - pip:
+    - geojson
+    - fastapi
+    - uvicorn
+    - aiofiles
+    - httptools
