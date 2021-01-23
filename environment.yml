@@ -1,9 +1,13 @@
 name: flightmap
+channels:
+  - conda-forge
 dependencies:
   - python=3
+  - gdal
   - shapely
   - gunicorn
   - uvloop
+  - requests
   - pip
   - pip:
     - geojson
