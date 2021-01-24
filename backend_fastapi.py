@@ -1,10 +1,15 @@
-from fastapi import FastAPI, Query
+import os
+import json
+from fastapi import FastAPI, Query, HTTPException
 from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from pydantic import BaseModel, confloat, conint, constr
+import redis
 import backend_vrs_db
 import logging
 logging.basicConfig(level=logging.INFO)
+
+redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
 
 app = FastAPI(
     openapi_prefix='',
@@ -79,3 +84,16 @@ def get_geojson_airport(
 @app.post("/api/geojson/flightsearch")
 def post_geojson_flightsearch(data: FlightSearch):
     return backend_vrs_db.get_geojson_flightsearch(data)
+
+
+@app.get("/api/covid_data")
+def get_covid_data():
+    try:
+        covid_data = json.loads(redis_connection.get('covid_data'))
+    except TypeError:
+        logging.exception('Found no covid_data in redis.')
+        raise HTTPException(status_code=404, detail="Item not found")
+    except redis.exceptions.ConnectionError:
+        logging.exception('Problem with redis connection.')
+        raise HTTPException(status_code=500, detail="Internal server error")
+    return covid_data
