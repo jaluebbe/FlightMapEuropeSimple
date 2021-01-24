@@ -99,7 +99,7 @@ def get_covid_data():
     return covid_data
 
 
-@app.get("/api/flights_statistics")
+@app.get("/api/flights_statistics.json")
 def get_flights_statistics():
     try:
         flights_statistics = json.loads(redis_connection.get(
@@ -113,7 +113,7 @@ def get_flights_statistics():
     return flights_statistics
 
 
-@app.get("/api/fir_uir_statistics")
+@app.get("/api/fir_uir_statistics.json")
 def get_fir_uir_statistics():
     try:
         fir_uir_statistics = json.loads(redis_connection.get(
