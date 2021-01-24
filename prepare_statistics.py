@@ -24,7 +24,7 @@ if statistics_url is None:
 
 _response = requests.get(statistics_url+'/flights_statistics.json')
 if _response.status_code == 200:
-    redis_connection.set('flight_statistics', _response.text)
+    redis_connection.set('flights_statistics', _response.text)
 
 _response = requests.get(statistics_url+'/fir_uir_statistics.json')
 if _response.status_code == 200:
