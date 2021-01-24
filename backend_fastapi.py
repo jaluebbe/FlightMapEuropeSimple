@@ -86,7 +86,7 @@ def post_geojson_flightsearch(data: FlightSearch):
     return backend_vrs_db.get_geojson_flightsearch(data)
 
 
-@app.get("/api/covid_data")
+@app.get("/api/covid_data.json")
 def get_covid_data():
     try:
         covid_data = json.loads(redis_connection.get('covid_data'))
