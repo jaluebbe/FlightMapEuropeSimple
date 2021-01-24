@@ -95,8 +95,8 @@
             'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
         );
         loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
-        loadFirUirStatistics();
-        loadFlightStatistics();
+        loadFirUirStatistics('./api/fir_uir_statistics');
+        loadFlightStatistics('./api/flights_statistics');
         loadCovidData('./api/covid_data');
     </script>
 </body>

@@ -1,6 +1,6 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
 RUN pip install --upgrade pip \
-    && pip install aiofiles \
+    && pip install aiofiles redis \
     && rm -rf ~/.cache/pip/*
 COPY static /app/static
 COPY backend_vrs_db.py /app/

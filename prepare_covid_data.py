@@ -16,6 +16,3 @@ json_data = json.dumps(world_data.to_dict(orient='list')).replace(
 
 with open('static/covid_data.json', 'w') as f:
     f.write(json_data+'\n')
-
-redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
-redis_connection.set('covid_data', json_data)
