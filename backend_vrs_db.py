@@ -71,7 +71,8 @@ def get_geojson_airports():
         cursor.execute(
             "SELECT Name, Icao, Iata, ROUND(Latitude, 6) AS Latitude, "
             "ROUND(Longitude, 6) AS Longitude FROM Airport "
-            "WHERE LENGTH(Icao) = 4")
+            "WHERE ICAO REGEXP '^[A-Z]{4}$' AND (LENGTH(IATA)=3 OR "
+            "Destinations + Origins > 0)")
         result = cursor.fetchall()
         connection.close()
     except sqlite3.DatabaseError:
