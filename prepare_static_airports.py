@@ -3,11 +3,13 @@
 import csv
 import requests
 import json
+import re
 import clip_geojson_precision
 
 CSV_URL = 'https://ourairports.com/data/airports.csv'
 
 ignored_icaos = ['OPDD', 'OP17', 'VO55', 'EK_4']
+accepted_icaos = []
 ignored_types = []
 # possible types: 'balloonport', 'heliport', 'seaplane_base', 'small_airport',
 # 'medium_airport', 'large_airport', ''
@@ -23,7 +25,7 @@ for row in reader:
         continue
     if row['type'] in ignored_types:
         continue
-    if len(row['gps_code']) != 4:
+    if re.match('^[A-Z]{4}$', row['gps_code']) is None:
         continue
     if not len(row['iata_code']) in (0, 3):
         if row['iata_code'] == '0':
@@ -32,13 +34,15 @@ for row in reader:
             continue
     if row['type'] == 'closed':
         continue
-    if len(row['iata_code']) != 3 and row['scheduled_service'] == 'no':
+    if len(row['iata_code']) != 3 and not row['gps_code'] in accepted_icaos:
+        continue
+    if row['scheduled_service'] == 'no':
         continue
     _point = {"type": "Point", "coordinates": [float(row['longitude_deg']),
         float(row['latitude_deg'])]}
     _feature = {"geometry": _point, "type": "Feature", "properties": {
         'name': row['name'],
-        'icao': row['ident'],
+        'icao': row['gps_code'],
         'iata': row['iata_code'],
         'type': row['type']
         }}

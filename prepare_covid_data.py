@@ -14,5 +14,5 @@ covid_data = {'world': world_data.to_dict(orient='list')}
 json_data = json.dumps(world_data.to_dict(orient='list')).replace(
     'NaN', 'null').replace('.0,', ',').replace('.0]', ']')
 
-with open('static/covid_data.json', 'w') as f:
+with open('covid_data.json', 'w') as f:
     f.write(json_data+'\n')
