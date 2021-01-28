@@ -35,7 +35,12 @@ var airportMarkers = L.geoJSON(null, {
 
     },
     pointToLayer: function(feature, latlng) {
-        var radius = 1000 + feature.properties.known_departures * 3.5;
+        var radius = 1000;
+        if (typeof feature.properties.known_departures !== 'undefined') {
+            radius += feature.properties.known_departures * 3.5;
+        } else if (typeof feature.properties.known_destinations !== 'undefined') {
+            radius += feature.properties.known_destinations * 5;
+        }
         return L.circle(latlng, {
             color: '#d50000',
             fillColor: '#d50000',
