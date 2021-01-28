@@ -23,8 +23,10 @@ var airportMarkers = L.geoJSON(null, {
             feature.properties.icao + " / " +
             feature.properties.iata;
         if (typeof feature.properties.known_destinations !== 'undefined') {
-            tooltipContent += "<br>" + feature.properties.known_destinations + " known destinations" +
-                "<br>" + feature.properties.known_departures + " known departures";
+            tooltipContent += "<br>" + feature.properties.known_destinations + " known destinations";
+        }
+        if (typeof feature.properties.known_departures !== 'undefined') {
+            tooltipContent += "<br>" + feature.properties.known_departures + " known departures";
         }
         layer.bindTooltip(tooltipContent, {
             direction: "top",
