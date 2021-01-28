@@ -5,14 +5,39 @@ body {
     min-height: 100%;
 }
 
-#map {
-    height: auto;
+.map-fullscreen {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     margin-bottom: 52px;
+}
+
+.map-small {
+    position: relative;
+    min-width: 280px;
+    min-height: 285px;
+    height: 40%;
+}
+
+#fir_uir_statistics {
+    min-width: 280px;
+    height: 300px;
+    padding: 1em;
+    border: 1px;
+}
+
+#world_statistics {
+    min-width: 280px;
+    height: 400px;
+    padding: 1em;
+    border: 1px;
+}
+
+#explanation {
+    padding: 1em;
+    padding-bottom: 52px;
 }
 
 pre {

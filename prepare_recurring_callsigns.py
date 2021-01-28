@@ -18,7 +18,7 @@ callsign_occurences = opensky.request(
     "group by callsign ",
     start_date.timestamp,
     end_date.timestamp,
-    date_delta=pd.Timedelta("22 days"),
+    date_delta=pd.Timedelta("1 days"),
     columns=["callsign", "first_seen", "last_seen"],
     cached=False,
 )

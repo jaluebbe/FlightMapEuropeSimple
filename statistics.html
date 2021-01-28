@@ -9,38 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha384-eS4bw6aEvhCSXWGP85ANR/N8isWKzT7P36NvcuTJGkrj6wsbxLVpXslrNXYHyseD" crossorigin="anonymous">
     <link rel="stylesheet" href="static/flightmap.css">
-    <style>
-        #map {
-            width: 98%;
-            min-width: 325px;
-            min-height: 285px;
-            height: 42%;
-        }
-
-        #fir_uir_statistics {
-            width: 98%;
-            min-width: 325px;
-            height: 350px;
-            padding: 1em;
-            border: 1px;
-        }
-
-        #world_statistics {
-            width: 98%;
-            min-width: 325px;
-            height: 430px;
-            padding: 1em;
-            border: 1px;
-        }
-
-        #explanation {
-            padding: 1em;
-        }
-    </style>
 </head>
 
 <body>
-    <div id="map"></div>
+    <div id="map" class="map-small"></div>
     <div id="fir_uir_statistics"></div>
     <div id="explanation">
         <h2>Flight statistics based on FIR/UIR</h2>
@@ -81,10 +53,10 @@
         <a href='https://ourworldindata.org/coronavirus'>Max Roser, Hannah Ritchie, Esteban Ortiz-Ospina and Joe Hasell
             (2020) - "Coronavirus Pandemic (COVID-19)"</a>
     </div>
-    <hr>
-    <footer>
-        <p style="text-align: center;padding-bottom: 12px;"><a href="./index.html">Flight map</a></p>
-    </footer>
+    <div class="navbar">
+        <a href="./index.html">Flight map</a>
+        <a href="./statistics.html" class="active">Flight statistics</a>
+    </div>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha384-bmPowDlt+owc6Mn3LwOzLPkYiVm6MuKeLMe0qN2pp7Fhmux2xtVJm5e+ekpCVv4x" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
