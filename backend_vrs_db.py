@@ -70,7 +70,7 @@ def get_geojson_airports():
         cursor = connection.cursor()
         cursor.execute(
             "SELECT Name, Icao, Iata, ROUND(Latitude, 6) AS Latitude, "
-            "ROUND(Longitude, 6) AS Longitude FROM Airport "
+            "ROUND(Longitude, 6) AS Longitude, Destinations FROM Airport "
             "WHERE ICAO REGEXP '^[A-Z]{4}$' AND (LENGTH(IATA)=3 OR "
             "Destinations + Origins > 0)")
         result = cursor.fetchall()
@@ -83,7 +83,7 @@ def get_geojson_airports():
         _point = {"type": "Point", "coordinates": [row.Longitude, row.Latitude]}
         _feature = {"geometry": _point, "type": "Feature", "properties": {
             'name': row.Name, 'icao': row.Icao, 'iata': row.Iata,
-            'known_departures': 0}}
+            'known_destinations': row.Destinations}}
         _features.append(_feature)
     _collection = {"type": "FeatureCollection", "properties": {
         "utc": time.time()}, "features": _features}
