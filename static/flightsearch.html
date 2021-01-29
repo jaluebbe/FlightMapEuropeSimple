@@ -22,11 +22,12 @@
     <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
     <script src="static/polyfill_string_includes.js"></script>
     <script src="static/flightmap.js"></script>
-    <script src="static/airports.js"></script>
+    <script src="static/airports_static.js"></script>
+    <script src="static/airports_interactive.js"></script>
     <script src="static/flightsearch.js"></script>
     <script>
-        refreshAirportData();
-        window.setInterval("refreshAirportData()", 60000);
+        loadAirportData('./api/geojson/airports');
+        window.setInterval("loadAirportData('./api/geojson/airports')", 60000);
     </script>
 </body>
 
