@@ -1,5 +1,6 @@
 import time
 import json
+import re
 import sqlite3
 import math
 from collections import namedtuple
@@ -62,11 +63,16 @@ def namedtuple_factory(cursor, row):
     Row = namedtuple("Row", fields)
     return Row(*row)
 
+def regexp(expr, item):
+    reg = re.compile(expr)
+    return reg.search(item) is not None
+
 def get_geojson_airports():
     try:
         connection = sqlite3.connect("file:" + directory +
             "StandingData.sqb?mode=ro", uri=True)
         connection.row_factory = namedtuple_factory
+        connection.create_function("REGEXP", 2, regexp)
         cursor = connection.cursor()
         cursor.execute(
             "SELECT Name, Icao, Iata, ROUND(Latitude, 6) AS Latitude, "
