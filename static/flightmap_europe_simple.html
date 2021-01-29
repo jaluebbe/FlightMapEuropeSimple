@@ -92,7 +92,7 @@
     <script src="static/aircraft_interactive.js"></script>
     <script>
         loadAirportData('./api/geojson/airports');
-        window.setInterval("loadAirportData('./api/geojson/airports')", 60000);
+        window.setInterval("loadAirportData('./api/geojson/airports')", 600000);
         loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
         refreshAircraftPositions();
         window.setInterval("refreshAircraftPositions()", 10000);
