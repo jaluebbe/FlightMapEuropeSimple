@@ -7,23 +7,67 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" integrity="sha384-d7pQbIswLsqVbYoAoHHlzPt+fmjkMwiXW/fvtIgK2r1u1bZXvGzL9HICUg4DKSgO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" integrity="sha384-lPzjPsFQL6te2x+VxmV6q1DpRxpRk0tmnl2cpwAO5y04ESyc752tnEWPKDfl1olr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" integrity="sha384-5kMSQJ6S4Qj5i09mtMNrWpSi8iXw230pKU76xTmrpezGnNJQzj0NzXjQLLg+jE7k" crossorigin="anonymous">
-    <link rel="stylesheet" href="static/flightmap.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            min-height: 100%;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 52px;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Style the links inside the navigation bar */
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="map" class="map-fullscreen"></div>
+    <div id="map"></div>
     <div class="navbar">
         <a href="./" class="active">Flight map</a>
         <a href="./statistics.html">Flight statistics</a>
     </div>
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js" integrity="sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js" integrity="sha384-N9K+COcUk7tr9O2uHZVp6jl7ueGhWsT+LUKUhd/VpA0svQrQMGArhY8r/u/Pkwih" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@turf/turf@6.3.0/turf.min.js" integrity="sha384-nyGVw++SNyi6OAnN+1SO/ahaCqBIecgU/GX0DxmV56dIQ0QDizRZIp+qT2TCe39E" crossorigin="anonymous"></script>
     <script src="static/leaflet.rotatedMarker.js"></script>
-    <script src="static/polyfill_string_includes.js"></script>
+    <script nomodule src="static/polyfill_string_includes.js"></script>
     <script src="static/flightmap.js"></script>
     <script src="static/airports_static.js"></script>
     <script src="static/airspaces_static.js"></script>

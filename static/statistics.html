@@ -7,12 +7,71 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha384-eS4bw6aEvhCSXWGP85ANR/N8isWKzT7P36NvcuTJGkrj6wsbxLVpXslrNXYHyseD" crossorigin="anonymous">
-    <link rel="stylesheet" href="static/flightmap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.css" integrity="sha384-d7pQbIswLsqVbYoAoHHlzPt+fmjkMwiXW/fvtIgK2r1u1bZXvGzL9HICUg4DKSgO" crossorigin="anonymous">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            min-height: 100%;
+        }
+        #map {
+            position: relative;
+            min-width: 280px;
+            min-height: 285px;
+            height: 40%;
+        }
+
+        #fir_uir_statistics {
+            min-width: 280px;
+            height: 300px;
+            padding: 1em;
+            border: 1px;
+        }
+
+        #world_statistics {
+            min-width: 280px;
+            height: 400px;
+            padding: 1em;
+            border: 1px;
+        }
+
+        #explanation {
+            padding: 1em;
+            padding-bottom: 52px;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="map" class="map-small"></div>
+    <div id="map"></div>
     <div id="fir_uir_statistics"></div>
     <div id="explanation">
         <h2>Flight statistics based on FIR/UIR</h2>
@@ -58,13 +117,11 @@
         <a href="./flightsearch.html">Flight search</a>
         <a href="./statistics.html" class="active">Statistics</a>
     </div>
-    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha384-bmPowDlt+owc6Mn3LwOzLPkYiVm6MuKeLMe0qN2pp7Fhmux2xtVJm5e+ekpCVv4x" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@turf/turf@5.1.6/turf.min.js" integrity="sha384-4AJURQ1iuA3c9I5pNFJ7YBjDqwLDoYhkOeBQlXtGTGGlavq433OFewlaCMV1Cta2" crossorigin="anonymous"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="static/polyfill_string_includes.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js" integrity="sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-basic-1.58.4.min.js" integrity="sha384-kVM8fVhuBXlzHDoS5NwPEJQ1KtlnnQtmSw0+GKOCUB7vY5n0ITFNV/8/j5iM3fCG" crossorigin="anonymous"></script>
+    <script nomodule src="static/polyfill_string_includes.js"></script>
     <script src="static/flightmap.js"></script>
     <script src="static/airspaces_static.js"></script>
-    <script src="static/upper_lower_airspace_limits.js"></script>
     <script src="static/statistics.js"></script>
     <script>
         map.doubleClickZoom.disable();
