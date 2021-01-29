@@ -26,14 +26,15 @@
     <script src="static/leaflet.rotatedMarker.js"></script>
     <script src="static/polyfill_string_includes.js"></script>
     <script src="static/flightmap.js"></script>
-    <script src="static/airports.js"></script>
+    <script src="static/airports_static.js"></script>
+    <script src="static/airports_interactive.js"></script>
     <script src="static/airspaces_static.js"></script>
     <script src="static/upper_lower_airspace_limits.js"></script>
     <script src="static/aircraft_static.js"></script>
     <script src="static/aircraft_interactive.js"></script>
     <script>
-        refreshAirportData();
-        window.setInterval("refreshAirportData()", 60000);
+        loadAirportData('./api/geojson/airports');
+        window.setInterval("loadAirportData('./api/geojson/airports')", 60000);
         loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
         refreshAircraftPositions();
         window.setInterval("refreshAircraftPositions()", 10000);

@@ -1,55 +1,9 @@
-map.createPane('routePlot');
-map.getPane('routePlot').style.zIndex = 395;
-
-map.createPane('airports');
-map.getPane('airports').style.zIndex = 397;
-
 function clickAirport(eo) {
     routesInfo(eo.target.feature.properties);
 }
 
-var airportMarkers = L.geoJSON(null, {
-    pane: 'airports',
-    onEachFeature: function(feature, layer) {
-        layer.on('click', function(eo) {
-            clickAirport(eo);
-        });
-        var iata = feature.properties.iata;
-        if (typeof iata === 'undefined' || iata == '') {
-            iata = '-';
-        }
-        var tooltipContent =
-            "" + feature.properties.name + "<br>" +
-            feature.properties.icao + " / " +
-            feature.properties.iata;
-        if (typeof feature.properties.known_destinations !== 'undefined') {
-            tooltipContent += "<br>" + feature.properties.known_destinations + " known destinations";
-        }
-        if (typeof feature.properties.known_departures !== 'undefined') {
-            tooltipContent += "<br>" + feature.properties.known_departures + " known departures";
-        }
-        layer.bindTooltip(tooltipContent, {
-            direction: "top",
-            offset: [0, -5]
-        });
+airportMarkers.addTo(map);
 
-    },
-    pointToLayer: function(feature, latlng) {
-        var radius = 1000;
-        if (typeof feature.properties.known_departures !== 'undefined') {
-            radius += feature.properties.known_departures * 3.5;
-        } else if (typeof feature.properties.known_destinations !== 'undefined') {
-            radius += feature.properties.known_destinations * 5;
-        }
-        return L.circle(latlng, {
-            color: '#d50000',
-            fillColor: '#d50000',
-            fillOpacity: 0.2,
-            radius: radius
-        })
-    }
-}).addTo(map)
-var latlngs;
 var routePlot = L.geoJSON(null, {
     pane: 'routePlot',
     style: function(feature) {
@@ -88,8 +42,6 @@ info.updateAirportInfo = function(airportInfo) {
     text += '<button onclick="info.reset()">reset airport routes</button>';
     this._div.innerHTML = text;
 }
-layerControl.addOverlay(airportMarkers,
-    "<span style='background-color:rgba(213, 0, 0, 0.2)'>Airports</span>");
 
 function routesInfo(airportInfo) {
     var xhr = new XMLHttpRequest();
@@ -123,18 +75,4 @@ map.on('click', function(eo) {
 
 function clickMap(eo) {
     info.reset();
-}
-
-function refreshAirportData() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', './api/geojson/airports');
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            airports = JSON.parse(xhr.responseText);
-            airportMarkers.clearLayers();
-            airportMarkers.addData(airports);
-        }
-    };
-    xhr.send();
 }
