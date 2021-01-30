@@ -44,6 +44,10 @@ services:
       - "traefik.http.routers.flightmap.entrypoints=websecure"
       - "traefik.http.routers.flightmap.tls=true"
       - "traefik.http.routers.flightmap.tls.certresolver=leresolver"
+      - "traefik.http.routers.flightmap-api.rule=(Host(`${FLIGHTMAP_HOST}.${MY_DOMAIN}`) && PathPrefix(`/api`))"
+      - "traefik.http.routers.flightmap-api.entrypoints=websecure"
+      - "traefik.http.routers.flightmap-api.tls=true"
+      - "traefik.http.routers.flightmap-api.tls.certresolver=leresolver"
     environment:
       - REDIS_HOST=redis
     depends_on:
