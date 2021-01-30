@@ -1,6 +1,6 @@
 import os
 import json
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Response
 from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
@@ -90,40 +90,26 @@ def post_geojson_flightsearch(data: FlightSearch):
 
 @app.get("/api/covid_data.json")
 def get_covid_data():
-    try:
-        covid_data = json.loads(redis_connection.get('covid_data'))
-    except TypeError:
-        logging.exception('Found no covid_data in redis.')
+    json_data = redis_connection.get('covid_data')
+    if json_data is not None:
+        return Response(content=json_data, media_type="application/json")
+    else:
         raise HTTPException(status_code=404, detail="Item not found")
-    except redis.exceptions.ConnectionError:
-        logging.exception('Problem with redis connection.')
-        raise HTTPException(status_code=500, detail="Internal server error")
-    return covid_data
 
 
 @app.get("/api/flights_statistics.json")
 def get_flights_statistics():
-    try:
-        flights_statistics = json.loads(redis_connection.get(
-            'flights_statistics'))
-    except TypeError:
-        logging.exception('Found no flights_statistics in redis.')
+    json_data = redis_connection.get('flights_statistics')
+    if json_data is not None:
+        return Response(content=json_data, media_type="application/json")
+    else:
         raise HTTPException(status_code=404, detail="Item not found")
-    except redis.exceptions.ConnectionError:
-        logging.exception('Problem with redis connection.')
-        raise HTTPException(status_code=500, detail="Internal server error")
-    return flights_statistics
 
 
 @app.get("/api/fir_uir_statistics.json")
 def get_fir_uir_statistics():
-    try:
-        fir_uir_statistics = json.loads(redis_connection.get(
-            'fir_uir_statistics'))
-    except TypeError:
-        logging.exception('Found no fir_uir_statistics in redis.')
+    json_data = redis_connection.get('fir_uir_statistics')
+    if json_data is not None:
+        return Response(content=json_data, media_type="application/json")
+    else:
         raise HTTPException(status_code=404, detail="Item not found")
-    except redis.exceptions.ConnectionError:
-        logging.exception('Problem with redis connection.')
-        raise HTTPException(status_code=500, detail="Internal server error")
-    return fir_uir_statistics
