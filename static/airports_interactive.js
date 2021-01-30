@@ -2,8 +2,6 @@ function clickAirport(eo) {
     routesInfo(eo.target.feature.properties);
 }
 
-airportMarkers.addTo(map);
-
 var routePlot = L.geoJSON(null, {
     pane: 'routePlot',
     style: function(feature) {
