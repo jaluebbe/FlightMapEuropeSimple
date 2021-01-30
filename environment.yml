@@ -8,6 +8,8 @@ dependencies:
   - gunicorn
   - uvloop
   - requests
+  - redis-py
+  - pandas
   - pip
   - pip:
     - geojson

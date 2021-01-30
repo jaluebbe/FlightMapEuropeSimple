@@ -1,11 +1,16 @@
-from fastapi import FastAPI, Query
+import os
+import json
+from fastapi import FastAPI, Query, HTTPException, Response
 from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, confloat, conint, constr
+import redis
 import backend_vrs_db
 import logging
 logging.basicConfig(level=logging.INFO)
+
+redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
 
 app = FastAPI(
     openapi_prefix='',
@@ -81,3 +86,30 @@ def get_geojson_airport(
 @app.post("/api/geojson/flightsearch")
 def post_geojson_flightsearch(data: FlightSearch):
     return backend_vrs_db.get_geojson_flightsearch(data)
+
+
+@app.get("/api/covid_data.json")
+def get_covid_data():
+    json_data = redis_connection.get('covid_data')
+    if json_data is not None:
+        return Response(content=json_data, media_type="application/json")
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+
+@app.get("/api/flights_statistics.json")
+def get_flights_statistics():
+    json_data = redis_connection.get('flights_statistics')
+    if json_data is not None:
+        return Response(content=json_data, media_type="application/json")
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+
+@app.get("/api/fir_uir_statistics.json")
+def get_fir_uir_statistics():
+    json_data = redis_connection.get('fir_uir_statistics')
+    if json_data is not None:
+        return Response(content=json_data, media_type="application/json")
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")

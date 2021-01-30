@@ -1,0 +1,59 @@
+version: '3.3'
+
+services:
+
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker
+      - --certificatesresolvers.leresolver.acme.tlschallenge=true
+      - --certificatesresolvers.leresolver.acme.email=${MY_EMAIL}
+      - --certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json
+    labels:
+      # global redirect to https
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  redis:
+    image: "redis:alpine"
+    # uncomment if you need redis access for debugging.
+#    ports:
+#      - "6379:6379"
+
+  flightmap:
+    image: flightmap_europe_simple:alpine
+    # you may switch to the image provided on Docker Hub.
+#    image: jaluebbe/flightmap_europe_simple:alpine
+    volumes:
+      - $PWD/../FlightMapEuropeSimple/flightroutes:/app/flightroutes
+      - $PWD/datenschutz.html:/app/static/datenschutz.html:ro
+    labels:
+      - "traefik.http.routers.flightmap.rule=Host(`${FLIGHTMAP_HOST}.${MY_DOMAIN}`)"
+      - "traefik.http.routers.flightmap.entrypoints=websecure"
+      - "traefik.http.routers.flightmap.tls=true"
+      - "traefik.http.routers.flightmap.tls.certresolver=leresolver"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+      - prepare_flightmap_data
+
+  prepare_flightmap_data:
+    image: prepare_flightmap_data
+    environment:
+      - REDIS_HOST=redis
+      - STATISTICS_URL=${STATISTICS_URL}
+    depends_on:
+      - redis

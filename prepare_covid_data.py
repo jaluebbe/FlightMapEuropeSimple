@@ -1,6 +1,7 @@
 import json
+import os
 import pandas as pd
-
+import redis
 
 url = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
 data = pd.read_csv(url)
