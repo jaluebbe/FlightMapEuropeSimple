@@ -73,13 +73,12 @@ map.on('overlayremove', function(eo) {
 });
 
 function refreshAircraftPositions() {
-    if (downloadingPositions == true) {
-        return
-    };
-    downloadingPositions = true;
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://opensky-network.org/api/states/all');
+    var url = 'https://opensky-network.org/api/states/all';
+    var bBox = map.getBounds();
+    xhr.open('GET', url + '?lamin=' + bBox.getSouth() + '&lomin=' + bBox.getWest() + '&lamax=' + bBox.getNorth() + '&lomax=' + bBox.getEast());
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.timeout = 8000;
     xhr.onload = function() {
         if (xhr.status === 200) {
             var t_start = Date.now();
@@ -114,7 +113,6 @@ function refreshAircraftPositions() {
             var t_stop = Date.now();
 //            console.log('duration: ' + (t_stop-t_start) / 1e3 + 's');
         }
-        downloadingPositions = false;
     };
     xhr.send();
 }
