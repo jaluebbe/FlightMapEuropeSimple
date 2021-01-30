@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, Query, HTTPException, Response
-from starlette.staticfiles import StaticFiles
+from starlette.staticfiles import StaticFiles, FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, confloat, conint, constr
 import redis
@@ -11,10 +11,10 @@ logging.basicConfig(level=logging.INFO)
 redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
 
 app = FastAPI(
-    openapi_prefix='',
     title='FlightMapEuropeSimple',
-    description=''
-    )
+    openapi_url='/api/openapi.json',
+    docs_url="/api/docs"
+)
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
 
@@ -30,6 +30,11 @@ class FlightSearch(BaseModel):
     destinationRadius: conint(gt=0, le=600e3)
     numberOfStops: conint(ge=0, le=2)
     filterAirlineAlliance: constr(regex='^(Star Alliance|Oneworld|SkyTeam|)$')
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return FileResponse('static/index.html')
 
 
 @app.get("/api/geojson/airports")
@@ -90,4 +95,4 @@ def get_fir_uir_statistics():
         raise HTTPException(status_code=404, detail="Item not found")
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/", StaticFiles(directory="static"), name="static")
