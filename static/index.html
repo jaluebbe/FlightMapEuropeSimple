@@ -3,7 +3,7 @@
 
 <head>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-    <title>flightmap europe static</title>
+    <title>flightmap europe simple</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" integrity="sha384-lPzjPsFQL6te2x+VxmV6q1DpRxpRk0tmnl2cpwAO5y04ESyc752tnEWPKDfl1olr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" integrity="sha384-5kMSQJ6S4Qj5i09mtMNrWpSi8iXw230pKU76xTmrpezGnNJQzj0NzXjQLLg+jE7k" crossorigin="anonymous">
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             min-height: 100%;
@@ -26,6 +27,20 @@
             margin-bottom: 52px;
         }
 
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+
         .navbar {
             background-color: #333;
             overflow: hidden;
@@ -34,7 +49,6 @@
             width: 100%;
         }
 
-        /* Style the links inside the navigation bar */
         .navbar a {
             float: left;
             display: block;
@@ -61,7 +75,8 @@
     <div id="map"></div>
     <div class="navbar">
         <a href="./" class="active">Flight map</a>
-        <a href="./statistics.html">Flight statistics</a>
+        <a href="./flightsearch.html">Flight search</a>
+        <a href="./statistics.html">Statistics</a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js" integrity="sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js" integrity="sha384-N9K+COcUk7tr9O2uHZVp6jl7ueGhWsT+LUKUhd/VpA0svQrQMGArhY8r/u/Pkwih" crossorigin="anonymous"></script>
@@ -70,17 +85,20 @@
     <script nomodule src="polyfill_string_includes.js"></script>
     <script src="flightmap.js"></script>
     <script src="airports_static.js"></script>
+    <script src="airports_interactive.js"></script>
     <script src="airspaces_static.js"></script>
     <script src="upper_lower_airspace_limits.js"></script>
     <script src="aircraft_static.js"></script>
+    <script src="aircraft_interactive.js"></script>
     <script>
-        loadAirportData();
+        loadAirportData('./api/geojson/airports');
+        var airportInterval = window.setInterval(loadAirportData, 600000, './api/geojson/airports');
         loadFirUirShapes('./flightmap_europe_with_north_america.json');
         if (!L.Browser.mobile) {
             airportMarkers.addTo(map);
             refreshAircraftPositions();
         }
-        var myInterval = window.setInterval(refreshAircraftPositions, 10000);
+        var aircraftInterval = window.setInterval(refreshAircraftPositions, 10000);
     </script>
 </body>
 
