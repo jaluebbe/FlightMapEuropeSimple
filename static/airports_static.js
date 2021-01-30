@@ -58,7 +58,7 @@ layerControl.addOverlay(airportMarkers,
     "<span style='background-color:rgba(213, 0, 0, 0.2)'>Airports</span>");
 
 function loadAirportData(url) {
-    if (!url) url = './static/airports_static.json';
+    if (!url) url = './airports_static.json';
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url);
     xhr.setRequestHeader('Content-Type', 'application/json');

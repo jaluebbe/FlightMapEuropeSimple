@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <title>Flight statistics</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
@@ -113,25 +113,24 @@
             (2020) - "Coronavirus Pandemic (COVID-19)"</a>
     </div>
     <div class="navbar">
-        <a href="./">Flight map</a>
-        <a href="./flightsearch.html">Flight search</a>
-        <a href="./statistics.html" class="active">Statistics</a>
+        <a href="./index.html">Flight map</a>
+        <a href="./statistics.html" class="active">Flight statistics</a>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js" integrity="sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO" crossorigin="anonymous"></script>
     <script src="https://cdn.plot.ly/plotly-basic-1.58.4.min.js" integrity="sha384-kVM8fVhuBXlzHDoS5NwPEJQ1KtlnnQtmSw0+GKOCUB7vY5n0ITFNV/8/j5iM3fCG" crossorigin="anonymous"></script>
-    <script nomodule src="static/polyfill_string_includes.js"></script>
-    <script src="static/flightmap.js"></script>
-    <script src="static/airspaces_static.js"></script>
-    <script src="static/statistics.js"></script>
+    <script nomodule src="polyfill_string_includes.js"></script>
+    <script src="flightmap.js"></script>
+    <script src="airspaces_static.js"></script>
+    <script src="statistics.js"></script>
     <script>
         map.doubleClickZoom.disable();
         map.attributionControl.addAttribution(
             'data &copy; <a href="https://opensky-network.org" target="_blank">The OpenSky Network</a>'
         );
-        loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
-        loadFirUirStatistics('./api/fir_uir_statistics.json');
-        loadFlightStatistics('./api/flights_statistics.json');
-        loadCovidData('./api/covid_data.json');
+        loadFirUirShapes('./flightmap_europe_with_north_america.json');
+        loadFirUirStatistics();
+        loadFlightStatistics();
+        loadCovidData();
     </script>
 </body>
 

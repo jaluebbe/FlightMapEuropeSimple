@@ -1,8 +1,6 @@
 import os
-import json
 from fastapi import FastAPI, Query, HTTPException, Response
 from starlette.staticfiles import StaticFiles
-from starlette.responses import FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, confloat, conint, constr
 import redis
@@ -32,29 +30,6 @@ class FlightSearch(BaseModel):
     destinationRadius: conint(gt=0, le=600e3)
     numberOfStops: conint(ge=0, le=2)
     filterAirlineAlliance: constr(regex='^(Star Alliance|Oneworld|SkyTeam|)$')
-
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
-@app.get("/", include_in_schema=False)
-async def root():
-    return FileResponse('static/flightmap_europe_simple.html')
-
-
-@app.get("/flightsearch.html", include_in_schema=False)
-async def flightsearch():
-    return FileResponse('static/flightsearch.html')
-
-
-@app.get("/statistics.html", include_in_schema=False)
-async def statistics():  
-    return FileResponse('static/statistics.html') 
-
-
-@app.get("/test.html", include_in_schema=False)
-async def testpage():
-    return FileResponse('static/flightmap_test.html')
 
 
 @app.get("/api/geojson/airports")
@@ -113,3 +88,6 @@ def get_fir_uir_statistics():
         return Response(content=json_data, media_type="application/json")
     else:
         raise HTTPException(status_code=404, detail="Item not found")
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="shortcut icon" type="image/x-icon" href="static/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <title>flightmap europe simple</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
@@ -81,19 +81,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js" integrity="sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js" integrity="sha384-N9K+COcUk7tr9O2uHZVp6jl7ueGhWsT+LUKUhd/VpA0svQrQMGArhY8r/u/Pkwih" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@turf/turf@6.3.0/turf.min.js" integrity="sha384-nyGVw++SNyi6OAnN+1SO/ahaCqBIecgU/GX0DxmV56dIQ0QDizRZIp+qT2TCe39E" crossorigin="anonymous"></script>
-    <script src="static/leaflet.rotatedMarker.js"></script>
-    <script nomodule src="static/polyfill_string_includes.js"></script>
-    <script src="static/flightmap.js"></script>
-    <script src="static/airports_static.js"></script>
-    <script src="static/airports_interactive.js"></script>
-    <script src="static/airspaces_static.js"></script>
-    <script src="static/upper_lower_airspace_limits.js"></script>
-    <script src="static/aircraft_static.js"></script>
-    <script src="static/aircraft_interactive.js"></script>
+    <script src="leaflet.rotatedMarker.js"></script>
+    <script nomodule src="polyfill_string_includes.js"></script>
+    <script src="flightmap.js"></script>
+    <script src="airports_static.js"></script>
+    <script src="airports_interactive.js"></script>
+    <script src="airspaces_static.js"></script>
+    <script src="upper_lower_airspace_limits.js"></script>
+    <script src="aircraft_static.js"></script>
+    <script src="aircraft_interactive.js"></script>
     <script>
         loadAirportData('./api/geojson/airports');
         var airportInterval = window.setInterval(loadAirportData, 600000, './api/geojson/airports');
-        loadFirUirShapes('./static/flightmap_europe_with_north_america.json');
+        loadFirUirShapes('./flightmap_europe_with_north_america.json');
         if (!L.Browser.mobile) {
             airportMarkers.addTo(map);
             refreshAircraftPositions();

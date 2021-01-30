@@ -78,11 +78,11 @@
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.min.js" integrity="sha384-vdvDM6Rl/coCrMsKwhal4uc9MUUFNrYa+cxp+nJQHy3TvozEpVKVexz/NTbE5VSO" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/@turf/turf@6.3.0/turf.min.js" integrity="sha384-nyGVw++SNyi6OAnN+1SO/ahaCqBIecgU/GX0DxmV56dIQ0QDizRZIp+qT2TCe39E" crossorigin="anonymous"></script>
-    <script nomodule src="static/polyfill_string_includes.js"></script>
-    <script src="static/flightmap.js"></script>
-    <script src="static/airports_static.js"></script>
-    <script src="static/airports_interactive.js"></script>
-    <script src="static/flightsearch.js"></script>
+    <script nomodule src="polyfill_string_includes.js"></script>
+    <script src="flightmap.js"></script>
+    <script src="airports_static.js"></script>
+    <script src="airports_interactive.js"></script>
+    <script src="flightsearch.js"></script>
     <script>
         loadAirportData('./api/geojson/airports');
         window.setInterval("loadAirportData('./api/geojson/airports')", 600000);
