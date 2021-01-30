@@ -32,18 +32,18 @@ services:
 #    ports:
 #      - "6379:6379"
 
-  flightmap:
+  flightmap_api:
     image: flightmap_europe_simple:alpine
     # you may switch to the image provided on Docker Hub.
 #    image: jaluebbe/flightmap_europe_simple:alpine
     volumes:
-      - $PWD/../FlightMapEuropeSimple/flightroutes:/app/flightroutes
+      - $PWD/flightroutes:/app/flightroutes
       - $PWD/datenschutz.html:/app/static/datenschutz.html:ro
     labels:
-      - "traefik.http.routers.flightmap.rule=Host(`${FLIGHTMAP_HOST}.${MY_DOMAIN}`)"
-      - "traefik.http.routers.flightmap.entrypoints=websecure"
-      - "traefik.http.routers.flightmap.tls=true"
-      - "traefik.http.routers.flightmap.tls.certresolver=leresolver"
+      - "traefik.http.routers.flightmap-api.rule=(Host(`${FLIGHTMAP_HOST}.${MY_DOMAIN}`) && PathPrefix(`/api`))"
+      - "traefik.http.routers.flightmap-api.entrypoints=websecure"
+      - "traefik.http.routers.flightmap-api.tls=true"
+      - "traefik.http.routers.flightmap-api.tls.certresolver=leresolver"
     environment:
       - REDIS_HOST=redis
     depends_on:
@@ -57,3 +57,17 @@ services:
       - STATISTICS_URL=${STATISTICS_URL}
     depends_on:
       - redis
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - $PWD/static:/usr/share/nginx/html
+      - $PWD/datenschutz.html:/usr/share/nginx/html/datenschutz.html:ro
+    labels:
+      - "traefik.http.routers.flightmap.rule=Host(`${FLIGHTMAP_HOST}.${MY_DOMAIN}`)"
+      - "traefik.http.routers.flightmap.entrypoints=websecure"
+      - "traefik.http.routers.flightmap.tls=true"
+      - "traefik.http.routers.flightmap.tls.certresolver=leresolver"
+    depends_on:
+      - flightmap_api
+     

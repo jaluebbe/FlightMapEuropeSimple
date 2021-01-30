@@ -1,8 +1,6 @@
 import os
-import json
 from fastapi import FastAPI, Query, HTTPException, Response
-from starlette.staticfiles import StaticFiles
-from starlette.responses import FileResponse
+from starlette.staticfiles import StaticFiles, FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, confloat, conint, constr
 import redis
@@ -13,10 +11,10 @@ logging.basicConfig(level=logging.INFO)
 redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
 
 app = FastAPI(
-    openapi_prefix='',
     title='FlightMapEuropeSimple',
-    description=''
-    )
+    openapi_url='/api/openapi.json',
+    docs_url="/api/docs"
+)
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
 
@@ -34,27 +32,9 @@ class FlightSearch(BaseModel):
     filterAirlineAlliance: constr(regex='^(Star Alliance|Oneworld|SkyTeam|)$')
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
 @app.get("/", include_in_schema=False)
 async def root():
-    return FileResponse('static/flightmap_europe_simple.html')
-
-
-@app.get("/flightsearch.html", include_in_schema=False)
-async def flightsearch():
-    return FileResponse('static/flightsearch.html')
-
-
-@app.get("/statistics.html", include_in_schema=False)
-async def statistics():  
-    return FileResponse('static/statistics.html') 
-
-
-@app.get("/test.html", include_in_schema=False)
-async def testpage():
-    return FileResponse('static/flightmap_test.html')
+    return FileResponse('static/index.html')
 
 
 @app.get("/api/geojson/airports")
@@ -113,3 +93,6 @@ def get_fir_uir_statistics():
         return Response(content=json_data, media_type="application/json")
     else:
         raise HTTPException(status_code=404, detail="Item not found")
+
+
+app.mount("/", StaticFiles(directory="static"), name="static")

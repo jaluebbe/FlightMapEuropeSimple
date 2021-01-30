@@ -7,6 +7,7 @@ from collections import namedtuple
 import logging
 logger = logging.getLogger(__name__)
 
+
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()
@@ -16,10 +17,11 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            logger.warning('%r  %2.2f ms' % \
+            logger.warning('%r  %2.2f ms' %
                   (method.__name__, (te - ts) * 1000))
         return result
     return timed
+
 
 directory = "flightroutes/"
 
@@ -43,16 +45,19 @@ oneworld_icaos = [
     'DSM', 'SUS', 'IBS', 'SHT', 'SBI', 'ALK', 'LNE', 'RJA', 'QLK', 'SKW', 'LTM',
     'PDT', 'RPA', 'CAW', 'NWK', 'LAN', 'LPE', 'CPA', 'HDA']
 
+
 def get_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    degRad = 2 * math.pi / 360
+    deg_rad = 2 * math.pi / 360
     distance = (
-        6.370e6 * math.acos(math.sin(lat1 * degRad) * math.sin(lat2 * degRad)
-        + math.cos(lat1 * degRad) * math.cos(lat2 * degRad)
-        * math.cos((lon2 - lon1) * degRad)))
+        6.370e6 * math.acos(math.sin(lat1 * deg_rad) * math.sin(lat2 * deg_rad)
+        + math.cos(lat1 * deg_rad) * math.cos(lat2 * deg_rad)
+                            * math.cos((lon2 - lon1) * deg_rad)))
     return distance
+
 
 def cos_deg(angle: float) -> float:
     return math.cos(angle * math.pi / 180)
+
 
 def namedtuple_factory(cursor, row):
     """
@@ -63,9 +68,11 @@ def namedtuple_factory(cursor, row):
     Row = namedtuple("Row", fields)
     return Row(*row)
 
+
 def regexp(expr, item):
     reg = re.compile(expr)
     return reg.search(item) is not None
+
 
 def get_geojson_airports():
     try:
@@ -96,6 +103,7 @@ def get_geojson_airports():
     airports_data = _collection
     return airports_data
 
+
 def get_airport_position(airport_icao):
     try:
         connection = sqlite3.connect("file:" + directory +
@@ -112,6 +120,7 @@ def get_airport_position(airport_icao):
         logger.exception('get_airport_position({})'.format(airport_icao))
         return None
     return result
+
 
 def get_airport_positions():
     try:
@@ -136,6 +145,7 @@ def get_airport_positions():
         airport_positions[row.Icao] = [row.Longitude, row.Latitude]
     return airport_positions
 
+
 def get_distinct_routes_by_airport(airport_icao):
     try:
         connection = sqlite3.connect("file:" + directory +
@@ -153,6 +163,7 @@ def get_distinct_routes_by_airport(airport_icao):
         return None
     if result is not None:
         return [row.DirectRoute for row in result]
+
 
 def get_distinct_routes_by_airline(operator_icao):
     try:
@@ -178,6 +189,7 @@ def get_distinct_routes_by_airline(operator_icao):
             'operator_iata': result[0].OperatorIata,
             'operator_name': result[0].OperatorName}
 
+
 def get_route_by_callsign(callsign):
     try:
         connection = sqlite3.connect("file:" + directory +
@@ -194,6 +206,7 @@ def get_route_by_callsign(callsign):
         return None
     return result
 
+
 def get_geojson_callsign(callsign):
     _flight = get_route_by_callsign(callsign)
     if _flight is None:
@@ -207,7 +220,7 @@ def get_geojson_callsign(callsign):
             return '{}'
         _line_coordinates.append([_info.Longitude, _info.Latitude])
         _airport_infos.append({'name': _info.Name, 'icao': _icao,
-            'iata': _info.Iata,})
+            'iata': _info.Iata})
     _line_string = {
         "type": "LineString",
         "coordinates": _line_coordinates
@@ -224,6 +237,7 @@ def get_geojson_callsign(callsign):
     }
     _collection = {"type": "FeatureCollection", "features": [_feature]}
     return _collection
+
 
 def get_geojson_airport(icao):
     _feature_collection = {
@@ -259,6 +273,7 @@ def get_geojson_airport(icao):
         "coordinates": _coordinates}}]
     return _feature_collection
 
+
 def get_geojson_airline(icao):
     _feature_collection = {
         "type": "FeatureCollection", "features": [{"type": "Feature",
@@ -291,6 +306,7 @@ def get_geojson_airline(icao):
         "geometry": {"type": "MultiLineString",
         "coordinates": _coordinates}}]
     return _feature_collection
+
 
 @timeit
 def flightsearch(request_data):
@@ -427,7 +443,7 @@ def flightsearch(request_data):
     cursor.execute(sql_query_stopover_destinations)
     stopover_destination_icaos = [x.Origin for x in cursor.fetchall()]
     stopover_origins = ','.join(map(repr, stopover_origin_icaos))
-    stopover_destinations = ','.join(map(repr,stopover_destination_icaos))
+    stopover_destinations = ','.join(map(repr, stopover_destination_icaos))
     logger.debug(f'stopover destinations: {stopover_destinations}')
     logger.debug(f'stopover origins: {stopover_origins}')
     sql_query = f"""
@@ -461,6 +477,7 @@ def flightsearch(request_data):
     cursor.close()
     connection.close()
     return direct_routes + single_stopover_routes + double_stopover_routes
+
 
 @timeit
 def get_geojson_flightsearch(request_data):

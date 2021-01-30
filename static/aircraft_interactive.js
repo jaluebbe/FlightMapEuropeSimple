@@ -11,7 +11,7 @@ function processedActiveFeature(feature) {
     return false;
 }
 var activePlaneIcon = L.icon({
-    iconUrl: 'static/aiga_air_transportation_orange.svg',
+    iconUrl: 'aiga_air_transportation_orange.svg',
     iconSize: [16, 16]
 })
 
