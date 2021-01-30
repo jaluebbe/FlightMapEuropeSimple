@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Query
 from starlette.staticfiles import StaticFiles
 from starlette.responses import FileResponse
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, confloat, conint, constr
 import backend_vrs_db
 import logging
@@ -11,6 +12,7 @@ app = FastAPI(
     title='FlightMapEuropeSimple',
     description=''
     )
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 
 class Location(BaseModel):
