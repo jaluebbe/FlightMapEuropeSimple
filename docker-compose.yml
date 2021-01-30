@@ -33,9 +33,7 @@ services:
 #      - "6379:6379"
 
   flightmap_api:
-    image: flightmap_europe_simple:alpine
-    # you may switch to the image provided on Docker Hub.
-#    image: jaluebbe/flightmap_europe_simple:alpine
+    image: jaluebbe/flightmap_europe_simple:alpine
     volumes:
       - $PWD/flightroutes:/app/flightroutes
       - $PWD/datenschutz.html:/app/static/datenschutz.html:ro
@@ -51,7 +49,7 @@ services:
       - prepare_flightmap_data
 
   prepare_flightmap_data:
-    image: prepare_flightmap_data
+    image: jaluebbe/flightmap_europe_simple:update_statistics
     environment:
       - REDIS_HOST=redis
       - STATISTICS_URL=${STATISTICS_URL}
