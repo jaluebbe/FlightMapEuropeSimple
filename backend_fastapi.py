@@ -13,6 +13,7 @@ redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
 app = FastAPI(
     title='FlightMapEuropeSimple',
     openapi_url='/api/openapi.json',
+    redoc_url="/api/redoc",
     docs_url="/api/docs"
 )
 app.add_middleware(GZipMiddleware, minimum_size=500)
