@@ -138,6 +138,22 @@ function plotStatistics() {
             xaxis: 'x',
             yaxis: 'y2'
         });
+        worldData.push({
+            x: covidData.date,
+            y: covidData.people_vaccinated,
+            name: "people vaccinated",
+            type: 'scatter',
+            xaxis: 'x',
+            yaxis: 'y2'
+        });
+        worldData.push({
+            x: covidData.date,
+            y: covidData.people_fully_vaccinated,
+            name: "people fully vaccinated",
+            type: 'scatter',
+            xaxis: 'x',
+            yaxis: 'y2'
+        });
     }
     if (flightStatistics !== undefined && covidData !== undefined) {
         gridSetting = {
