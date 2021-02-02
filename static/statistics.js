@@ -135,6 +135,7 @@ function plotStatistics() {
             y: covidData.total_vaccinations,
             name: "total vaccinations",
             type: 'scatter',
+            visible: 'legendonly',
             xaxis: 'x',
             yaxis: 'y2'
         });
