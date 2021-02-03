@@ -60,6 +60,7 @@ function plotFirUirStatistics() {
         grid: gridSetting,
         xaxis: {
             automargin: true,
+            range: ['2019-12-16', Date.now()],
             title: {
                 text: 'Date (UTC)',
                 standoff: 15
@@ -197,6 +198,7 @@ function plotStatistics() {
         grid: gridSetting,
         xaxis: {
             automargin: true,
+            range: ['2019-12-16', Date.now()],
             title: {
                 text: 'Date (UTC)',
                 standoff: 15
