@@ -61,6 +61,7 @@ services:
     volumes:
       - $PWD/static:/usr/share/nginx/html
       - $PWD/datenschutz.html:/usr/share/nginx/html/datenschutz.html:ro
+      - $PWD/nginx_gzip.conf:/etc/nginx/conf.d/gzip.conf:ro
     labels:
       - "traefik.http.routers.flightmap.rule=Host(`${FLIGHTMAP_HOST}.${MY_DOMAIN}`)"
       - "traefik.http.routers.flightmap.entrypoints=websecure"
