@@ -92,7 +92,7 @@ function refreshAircraftPositions() {
                     return;
                 else if (!callsign.match('^[A-Z]{3}[0-9]{1,4}[A-Z]{0,2}'))
                     return;
-                var aircraftPosition = turf.point([aircraft[5], aircraft[6]], {
+                var aircraftPosition = turf.helpers.point([aircraft[5], aircraft[6]], {
                     "callsign": callsign,
                     "heading": Math.round(aircraft[10]),
                     "ul_visible": "both",
@@ -100,7 +100,7 @@ function refreshAircraftPositions() {
                     "ground_speed": Math.round(aircraft[9] * (3600 / 1852)),
                     "vertical_speed": Math.round(aircraft[11] * (60 / 0.3048))
                 });
-                turf.featureEach(upper_lower_airspace_limits, function (airspace, featureIndex) {
+                turf.meta.featureEach(upper_lower_airspace_limits, function (airspace, featureIndex) {
                     if (aircraftPosition.properties.flight_level >= airspace.properties.MIN_FLIGHT &&
                         aircraftPosition.properties.flight_level <= airspace.properties.MAX_FLIGHT &&
                         turf.booleanPointInPolygon(aircraftPosition, airspace)) {

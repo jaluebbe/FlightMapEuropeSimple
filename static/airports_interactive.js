@@ -51,7 +51,7 @@ function routesInfo(airportInfo) {
             if (typeof routes_info.features === 'undefined') {} else {
                 info.updateAirportInfo(airportInfo)
                 routePlot.clearLayers();
-                turf.segmentEach(routes_info, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
+                turf.meta.segmentEach(routes_info, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
                     var start = currentSegment.geometry.coordinates[0];
                     var end = currentSegment.geometry.coordinates[1];
                     var distance = turf.distance(start, end);

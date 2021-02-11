@@ -157,7 +157,7 @@ function routeInfo(callsign, fitBounds) {
             } else {
                 info.update(callsign, route_info.features[0].properties);
                 routePlot.clearLayers();
-                turf.segmentEach(route_info, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
+                turf.meta.segmentEach(route_info, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
                     var start = currentSegment.geometry.coordinates[0];
                     var end = currentSegment.geometry.coordinates[1];
                     routePlot.addData(turf.greatCircle(start, end));
@@ -193,10 +193,10 @@ function airlineRoutesInfo(operatorIcao) {
             if (typeof airlineInfo.features === 'undefined') {
                 info.unknown(operatorIcao);
             } else {
-                turf.propEach(airlineInfo, function(currentProperties, featureIndex) {
+                turf.meta.propEach(airlineInfo, function(currentProperties, featureIndex) {
                     info.updateAirlineInfo(currentProperties);
                 });
-                turf.segmentEach(airlineInfo, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
+                turf.meta.segmentEach(airlineInfo, function(currentSegment, featureIndex, multiFeatureIndex, geometryIndex, segmentIndex) {
                     var start = currentSegment.geometry.coordinates[0];
                     var end = currentSegment.geometry.coordinates[1];
                     var distance = turf.distance(start, end);
