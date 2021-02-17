@@ -127,11 +127,12 @@ def get_airport_positions():
         connection = sqlite3.connect("file:" + directory +
             "StandingData.sqb?mode=ro", uri=True)
         connection.row_factory = namedtuple_factory
+        connection.create_function("REGEXP", 2, regexp)
         cursor = connection.cursor()
         cursor.execute("""
             SELECT Icao, ROUND(Latitude, 6) AS Latitude,
             ROUND(Longitude, 6) AS Longitude FROM Airport
-            WHERE LENGTH(Icao) = 4
+            WHERE Icao REGEXP '^[A-Z]{4}$'
             OR Destinations > 0
             OR Origins > 0
             """)
