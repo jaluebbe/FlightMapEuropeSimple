@@ -13,6 +13,8 @@ keys = [
     "total_deaths",
     "new_deaths",
     "total_vaccinations",
+    "people_vaccinated",
+    "people_fully_vaccinated",
 ]
 _response = requests.get(url)
 if _response.status_code == 200:
