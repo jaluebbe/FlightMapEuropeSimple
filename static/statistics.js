@@ -9,6 +9,7 @@ var names = {
     LFFFFIR: "PARIS FIR"
 };
 var show_percentage = false;
+var show_percentage_fir_uir = false;
 var d3colors = Plotly.d3.scale.category10();
 var firColors = new Map();
 
@@ -21,7 +22,7 @@ function plotFirUirStatistics() {
         var firUirData = firUirStatistics[airspace];
         data.push({
             x: firUirData.Dates,
-            y: show_percentage ? firUirData.percentage : firUirData.FlightsDetected,
+            y: show_percentage_fir_uir ? firUirData.percentage : firUirData.FlightsDetected,
             name: "" + names[airspace],
             type: 'scatter'
         });
@@ -34,10 +35,10 @@ function plotFirUirStatistics() {
     };
     var config = {
         modeBarButtonsToAdd: [{
-            name: show_percentage ? 'show absolute values' : 'show percentages',
-            icon: show_percentage ? Plotly.Icons.pencil : percent_icon,
+            name: show_percentage_fir_uir ? 'show absolute values' : 'show percentages',
+            icon: show_percentage_fir_uir ? Plotly.Icons.pencil : percent_icon,
             click: function(gd) {
-                show_percentage = !show_percentage;
+                show_percentage_fir_uir = !show_percentage_fir_uir;
                 plotFirUirStatistics()
             }
         }],
@@ -69,7 +70,7 @@ function plotFirUirStatistics() {
         yaxis: {
             automargin: true,
             title: {
-                text: show_percentage ? 'Airline flights (%)' : 'Airline flights',
+                text: show_percentage_fir_uir ? 'Airline flights (%)' : 'Airline flights',
                 standoff: 20
             },
             rangemode: 'tozero',
