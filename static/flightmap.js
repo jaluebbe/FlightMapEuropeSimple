@@ -1,6 +1,7 @@
 var map = L.map('map', {
     zoomSnap: 0.5,
-    zoomDelta: 0.5
+    zoomDelta: 0.5,
+    tap: false
 });
 map.attributionControl.addAttribution(
     '<a href="https://github.com/jaluebbe/FlightMapEuropeSimple" target="_blank">Source on GitHub</a>');
