@@ -45,6 +45,8 @@ oneworld_icaos = [
     'DSM', 'SUS', 'IBS', 'SHT', 'SBI', 'ALK', 'LNE', 'RJA', 'QLK', 'SKW', 'LTM',
     'PDT', 'RPA', 'CAW', 'NWK', 'LAN', 'LPE', 'CPA', 'HDA']
 
+icao24_pattern = re.compile("^[0-9a-f]{6}$")
+
 
 def get_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     deg_rad = 2 * math.pi / 360
@@ -504,3 +506,31 @@ def get_geojson_flightsearch(request_data):
         "properties": {}, "geometry": {"type": "MultiLineString",
         "coordinates": _coordinates}}]
     return _feature_collection
+
+
+def get_country_by_icao24(icao24, include_military=False):
+    if icao24_pattern.match(icao24) is None:
+        return None
+    if include_military:
+        sql_query = f"""
+            SELECT Country FROM CodeBlockView WHERE BitMask > 0
+            AND 0x{icao24} & SignificantBitMask = BitMask;
+            """
+    else:
+        sql_query = f"""
+            SELECT Country FROM CodeBlockView WHERE BitMask > 0
+            AND IsMilitary = 0 AND 0x{icao24} & SignificantBitMask = BitMask;
+            """
+    try:
+        connection = sqlite3.connect("file:" + directory +
+            "StandingData.sqb?mode=ro", uri=True)
+        connection.row_factory = namedtuple_factory
+        cursor = connection.cursor()
+        cursor.execute(sql_query)
+        result = cursor.fetchone()
+        connection.close()
+    except sqlite3.DatabaseError:
+        logger.exception('get_country_by_icao24({})'.format(icao24))
+        return None
+    if result is not None:
+        return result.Country
