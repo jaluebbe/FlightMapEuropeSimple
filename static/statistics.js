@@ -10,7 +10,7 @@ var names = {
 };
 var show_percentage = false;
 var show_percentage_fir_uir = false;
-var d3colors = Plotly.d3.scale.category10();
+var d3colors = d3.scale.category10();
 var firColors = new Map();
 
 function plotFirUirStatistics() {
