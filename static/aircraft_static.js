@@ -75,8 +75,10 @@ map.on('overlayremove', function(eo) {
 function refreshAircraftPositions() {
     var xhr = new XMLHttpRequest();
     var url = 'https://opensky-network.org/api/states/all';
-//    var bBox = map.getBounds();
-    var bBox = L.latLngBounds([-90, -180], [90, 180]);
+    if (L.Browser.mobile)
+        var bBox = map.getBounds();
+    else
+        var bBox = L.latLngBounds([-90, -180], [90, 180]);
     xhr.open('GET', url + '?lamin=' + bBox.getSouth() + '&lomin=' + bBox.getWest() + '&lamax=' + bBox.getNorth() + '&lomax=' + bBox.getEast());
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.timeout = 8000;
