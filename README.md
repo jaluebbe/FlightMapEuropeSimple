@@ -33,7 +33,7 @@ The version of the map hosted at
 https://jaluebbe.github.io/FlightMapEuropeSimple/ 
 consists of HTML, CSS and JavaScript only. 
 Airspaces and airports consist of static data. 
-Aircraft positions are downloaded directly from OpenSky Network every 10s. 
+Aircraft positions are downloaded directly from OpenSky Network every 900s. 
 Interactive controls providing flight route information for airports or
 aircraft are not available on this map. 
 
