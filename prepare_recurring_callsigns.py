@@ -16,8 +16,8 @@ callsign_occurences = opensky.request(
     "IS NULL OR lastposupdate IS NULL) AND baroaltitude <= 18288 AND "
     "RTRIM(callsign) REGEXP '^[A-Z][A-Z][A-Z][0-9][0-9]?[0-9A-Z]?[0-9A-Z]?$' "
     "group by callsign ",
-    start_date.timestamp,
-    end_date.timestamp,
+    start_date.timestamp(),
+    end_date.timestamp(),
     date_delta=pd.Timedelta("1 days"),
     columns=["callsign", "first_seen", "last_seen"],
     cached=False,
@@ -41,7 +41,7 @@ recurring_callsigns = callsign_occurences[
     callsign_occurences.last_seen - callsign_occurences.first_seen > 86400]
 
 _json_data = json.dumps({
-    'start_date': start_date.timestamp, 'end_date': end_date.timestamp,
+    'start_date': start_date.timestamp(), 'end_date': end_date.timestamp(),
     'recurring_callsigns': recurring_callsigns.index.to_list()})
 
 with open('flightroutes/recurring_callsigns.json', 'w') as f:
