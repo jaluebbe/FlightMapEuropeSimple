@@ -121,6 +121,7 @@ function plotStatistics() {
             y: covidData.total_cases,
             name: "total cases",
             type: 'scatter',
+            visible: 'legendonly',
             xaxis: 'x',
             yaxis: 'y2'
         });
@@ -129,6 +130,7 @@ function plotStatistics() {
             y: covidData.total_deaths,
             name: "total deaths",
             type: 'scatter',
+            visible: 'legendonly',
             xaxis: 'x',
             yaxis: 'y2'
         });
@@ -146,6 +148,7 @@ function plotStatistics() {
             y: covidData.people_vaccinated,
             name: "people vaccinated",
             type: 'scatter',
+            visible: 'legendonly',
             xaxis: 'x',
             yaxis: 'y2'
         });
@@ -154,6 +157,7 @@ function plotStatistics() {
             y: covidData.people_fully_vaccinated,
             name: "people fully vaccinated",
             type: 'scatter',
+            visible: 'legendonly',
             xaxis: 'x',
             yaxis: 'y2'
         });

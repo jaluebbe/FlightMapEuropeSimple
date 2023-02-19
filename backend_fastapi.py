@@ -4,17 +4,19 @@ from starlette.staticfiles import StaticFiles, FileResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel, confloat, conint, constr
 import redis
+import uvicorn
 import backend_vrs_db
 import logging
+
 logging.basicConfig(level=logging.INFO)
 
-redis_connection = redis.Redis(os.getenv('REDIS_HOST'), decode_responses=True)
+redis_connection = redis.Redis(os.getenv("REDIS_HOST"), decode_responses=True)
 
 app = FastAPI(
-    title='FlightMapEuropeSimple',
-    openapi_url='/api/openapi.json',
+    title="FlightMapEuropeSimple",
+    openapi_url="/api/openapi.json",
     redoc_url="/api/redoc",
-    docs_url="/api/docs"
+    docs_url="/api/docs",
 )
 app.add_middleware(GZipMiddleware, minimum_size=500)
 
@@ -30,12 +32,12 @@ class FlightSearch(BaseModel):
     originRadius: conint(gt=0, le=600e3)
     destinationRadius: conint(gt=0, le=600e3)
     numberOfStops: conint(ge=0, le=2)
-    filterAirlineAlliance: constr(regex='^(Star Alliance|Oneworld|SkyTeam|)$')
+    filterAirlineAlliance: constr(regex="^(Star Alliance|Oneworld|SkyTeam|)$")
 
 
 @app.get("/", include_in_schema=False)
 async def root():
-    return FileResponse('static/index.html')
+    return FileResponse("static/index.html")
 
 
 @app.get("/api/geojson/airports")
@@ -45,22 +47,30 @@ def get_geojson_airports():
 
 @app.get("/api/geojson/callsign/")
 def get_geojson_callsign(
-        callsign: str = Query(..., min_length=4, max_length=8, regex=(
-                '^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)'
-                '([A-Z]{2}))$'))):
+    callsign: str = Query(
+        ...,
+        min_length=4,
+        max_length=8,
+        regex=(
+            "^([A-Z]{3})[0-9](([0-9]{0,3})|([0-9]{0,2})([A-Z])|([0-9]?)"
+            "([A-Z]{2}))$"
+        ),
+    )
+):
     return backend_vrs_db.get_geojson_callsign(callsign)
 
 
 @app.get("/api/geojson/airline/")
 def get_geojson_airline(
-        icao: str = Query(..., min_length=3, max_length=3, regex='^[A-Z]{3}$')):
+    icao: str = Query(..., min_length=3, max_length=3, regex="^[A-Z]{3}$")
+):
     return backend_vrs_db.get_geojson_airline(icao)
 
 
 @app.get("/api/geojson/airport/")
 def get_geojson_airport(
-        icao: str = Query(..., min_length=4, max_length=4,
-                          regex="^[0-9A-Z]{4}$")):
+    icao: str = Query(..., min_length=4, max_length=4, regex="^[0-9A-Z]{4}$")
+):
     return backend_vrs_db.get_geojson_airport(icao)
 
 
@@ -71,7 +81,7 @@ def post_geojson_flightsearch(data: FlightSearch):
 
 @app.get("/api/covid_data.json")
 def get_covid_data():
-    json_data = redis_connection.get('covid_data')
+    json_data = redis_connection.get("covid_data")
     if json_data is not None:
         return Response(content=json_data, media_type="application/json")
     else:
@@ -80,7 +90,7 @@ def get_covid_data():
 
 @app.get("/api/flights_statistics.json")
 def get_flights_statistics():
-    json_data = redis_connection.get('flights_statistics')
+    json_data = redis_connection.get("flights_statistics")
     if json_data is not None:
         return Response(content=json_data, media_type="application/json")
     else:
@@ -89,7 +99,7 @@ def get_flights_statistics():
 
 @app.get("/api/fir_uir_statistics.json")
 def get_fir_uir_statistics():
-    json_data = redis_connection.get('fir_uir_statistics')
+    json_data = redis_connection.get("fir_uir_statistics")
     if json_data is not None:
         return Response(content=json_data, media_type="application/json")
     else:
@@ -97,3 +107,6 @@ def get_fir_uir_statistics():
 
 
 app.mount("/", StaticFiles(directory="static"), name="static")
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
