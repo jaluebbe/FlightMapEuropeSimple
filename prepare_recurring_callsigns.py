@@ -47,8 +47,8 @@ def fetch_data(trino_connection, start_hour, stop_hour):
             StateVectorsData4.lastposupdate.isnot(None),
             StateVectorsData4.baroaltitude <= 18288,
             text(
-                "REGEXP_LIKE(RTRIM(callsign), "
-                "'^[A-Z][A-Z][A-Z][0-9][0-9]?[0-9A-Z]?[0-9A-Z]?$')"
+                "REGEXP_LIKE(callsign, "
+                "'^[A-Z][A-Z][A-Z][0-9][0-9]?[0-9A-Z]?[0-9A-Z]?')"
             ),
         )
         .group_by(StateVectorsData4.callsign)
