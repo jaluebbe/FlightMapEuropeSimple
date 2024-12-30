@@ -81,7 +81,7 @@ _json_data = json.dumps(
     {
         "start_date": start_ts.timestamp(),
         "end_date": stop_ts.timestamp(),
-        "recurring_callsigns": recurring_callsigns.index.to_list(),
+        "recurring_callsigns": recurring_callsigns.callsign.to_list(),
     }
 )
 with open("flightroutes/recurring_callsigns.json", "w") as f:
